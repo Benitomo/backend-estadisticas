@@ -26,13 +26,13 @@ public class InterfacesSlim4ServiceImp implements InterfacesSlim4Service{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT FIRST 100 controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
+            String sql = "SELECT controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ArticleFilter a = new ArticleFilter();
-                a.setControlid(rs.getInt("controlid"));
+                a.setControlId(rs.getInt("controlid"));
                 a.setWarehousecode(rs.getString("warehousecode"));
-                a.setArticlecode(rs.getString("articlecode"));
+                a.setCode(rs.getString("articlecode"));
                 articles.add(a);
             }
             cnt.close();
@@ -60,9 +60,9 @@ public class InterfacesSlim4ServiceImp implements InterfacesSlim4Service{
             System.out.print(rs);
             while (rs.next()) {
                 ArticleFilter ar = new ArticleFilter();
-                ar.setControlid(rs.getInt("controlid"));
+                ar.setControlId(rs.getInt("controlId"));
                 ar.setWarehousecode(rs.getString("warehousecode"));
-                ar.setArticlecode(rs.getString("articlecode"));
+                ar.setCode(rs.getString("code"));
                 articles.add(ar);
             }
             cnt.close();
@@ -80,22 +80,23 @@ public class InterfacesSlim4ServiceImp implements InterfacesSlim4Service{
         try {
             Connection cnt = GetConnection.getSqlServerConnection();
             Statement stmt = cnt.createStatement();
-            int contador=0;
-            String sql = "SET NOCOUNT ON INSERT INTO articlefilter VALUES";
+            String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_ArticleFilter](controlId, warehouse, code) SELECT * FROM  (VALUES";
             for (int i = 0; i < a.size(); i++) {
-                sql=(i==a.size()-1)? sql + "(" + a.get(i).getControlid() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getArticlecode() + "')":
-                        sql + "(" + a.get(i).getControlid() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getArticlecode() + "'),";
+                sql=(i==a.size()-1)? 
+                        sql + "(" + a.get(i).getControlId() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getCode() + "')) AS temp(controlId, warehouse, code)"
+                        :
+                        sql + "(" + a.get(i).getControlId() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getCode() + "'),";
             }
            
             int inserto = stmt.executeUpdate(sql);
-            System.out.print( " Resultado de la insercciòn: " + inserto);
+            System.out.print( "\n Query inserccion:  " + sql + " \n");
             
-            ResultSet rs = stmt.executeQuery("select top 10 * from articlefilter");
+            ResultSet rs = stmt.executeQuery("select * from [slim4interface_test].[dbo].[S4Import_ArticleFilter]");
             while (rs.next()) {
                 ArticleFilter ar = new ArticleFilter();
-                ar.setControlid(rs.getInt("controlid"));
-                ar.setWarehousecode(rs.getString("warehousecode"));
-                ar.setArticlecode(rs.getString("articlecode"));
+                ar.setControlId(rs.getInt("controlId"));
+                ar.setWarehousecode(rs.getString("warehouse"));
+                ar.setCode(rs.getString("code"));
                 articles.add(ar);
             }
             cnt.close();

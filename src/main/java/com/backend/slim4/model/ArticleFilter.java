@@ -3,16 +3,16 @@ package com.backend.slim4.model;
 
 public class ArticleFilter {
     
-  int controlid;
+  int controlId;
   String warehousecode;
-  String articlecode;
+  String code;
 
-    public int getControlid() {
-        return controlid;
+    public int getControlId() {
+        return controlId;
     }
 
-    public void setControlid(int controlID) {
-        this.controlid = controlID;
+    public void setControlId(int controlID) {
+        this.controlId = controlID;
     }
 
     public String getWarehousecode() {
@@ -23,12 +23,12 @@ public class ArticleFilter {
         this.warehousecode = warehouse_code;
     }
 
-    public String getArticlecode() {
-        return articlecode;
+    public String getCode() {
+        return code;
     }
 
-    public void setArticlecode(String article_code) {
-        this.articlecode = article_code;
+    public void setCode(String code) {
+        this.code = code;
     }
   
   

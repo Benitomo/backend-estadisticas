@@ -18,6 +18,7 @@ public class GetConnection {
     public static Connection informix(String bd) {
         return getIfxConnection(bd);
     }
+    
     public static Connection sqlServer() throws ClassNotFoundException {
         return getSqlServerConnection();
     }
@@ -45,7 +46,7 @@ public class GetConnection {
     public static Connection getSqlServerConnection() throws ClassNotFoundException{
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");  
-            String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=slim4;user=sa;password=todayic.2021;encrypt=true;trustServerCertificate=true"; 
+            String connectionUrl = "jdbc:sqlserver://10.142.0.14:1433;database=slim4_test;user=sa;password=Pa$$w0rd2021.;encrypt=true;trustServerCertificate=true"; 
             Connection cnt = DriverManager.getConnection(connectionUrl);
             return cnt;
         } 
