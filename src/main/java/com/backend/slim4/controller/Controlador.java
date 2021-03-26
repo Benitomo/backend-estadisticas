@@ -2,12 +2,11 @@
 package com.backend.slim4.controller ;
 
 import com.backend.slim4.model.ArticleFilter;
-import com.backend.slim4.service.InterfacesSlim4Service;
+import com.backend.slim4.service.ArticleFilterService;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,29 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({"/slim4"})
 public class Controlador {
     
-    @Autowired
-    private ServletContext servletContext;
     
     @Autowired
-    InterfacesSlim4Service service;
+    ArticleFilterService service;
     
     
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
     public List<ArticleFilter> articleFilter()throws IOException{
-        System.out.print("Llegue aquí");
-        return service.articleFilter();
+        return service.articleFilterSelect();
     } 
-    
-    // Traer article_filter de Informix e insertar en SqlServer
-    @GetMapping(path = {"/test"})
-    public List<ArticleFilter> test()throws IOException{
-        System.out.print("Llegue aquí sql server");
-        return service.test();
-    } 
-    
-    
     
     // Test
     @GetMapping(path = {"/hello-world"})
