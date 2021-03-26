@@ -29,7 +29,7 @@ public class Controlador {
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
-    public List<ArticleFilter> articleFilter()throws IOException{
+    public ResponseEntity articleFilter()throws IOException{
         return service.articleFilterSelect();
     } 
     
