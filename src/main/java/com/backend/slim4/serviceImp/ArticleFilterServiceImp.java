@@ -73,7 +73,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         HashMap<String, String> map = new HashMap<>();
         map.put("Informix:", " se obtuvo la información correctamente!");
         map.put("Sql Server:", " se insertó la interface correctamente!");
-        map.put("Datos de S4Import_ArticleFilter en Sql Server:", g.toJson(articles));
+        map.put("Datos de S4Import_ArticleFilter en Sql Server:", g.toJson(articles).replaceAll("/", ""));
         return new ResponseEntity(map, HttpStatus.OK);
         
     }
