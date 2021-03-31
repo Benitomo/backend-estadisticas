@@ -27,7 +27,13 @@ public class ImportLogistics {
   int IOQ;
   int EOQ;
   int logisticUnit1;
+  int logisticUnit2;
+  int logisticUnit3;
+  int logisticUnit4;
+  int logisticUnit5;
+  int logisticUnit6;
   int insuranceInventory;
+  int insuranceInventoryType;
   BigDecimal targetServiceLevel;
   String plcArticleCode;
   Date plcDate;
@@ -52,6 +58,8 @@ public class ImportLogistics {
     public void setWarehousecode(String warehousecode) {
         this.warehousecode = warehousecode;
     }
+    
+    
 
     public String getCode() {
         return code;
@@ -148,6 +156,56 @@ public class ImportLogistics {
     public void setLogisticUnit1(int logisticUnit1) {
         this.logisticUnit1 = logisticUnit1;
     }
+
+    public int getLogisticUnit2() {
+        return logisticUnit2;
+    }
+
+    public void setLogisticUnit2(int logisticUnit2) {
+        this.logisticUnit2 = logisticUnit2;
+    }
+
+    public int getLogisticUnit3() {
+        return logisticUnit3;
+    }
+
+    public void setLogisticUnit3(int logisticUnit3) {
+        this.logisticUnit3 = logisticUnit3;
+    }
+
+    public int getLogisticUnit4() {
+        return logisticUnit4;
+    }
+
+    public void setLogisticUnit4(int logisticUnit4) {
+        this.logisticUnit4 = logisticUnit4;
+    }
+
+    public int getLogisticUnit5() {
+        return logisticUnit5;
+    }
+
+    public void setLogisticUnit5(int logisticUnit5) {
+        this.logisticUnit5 = logisticUnit5;
+    }
+
+    public int getLogisticUnit6() {
+        return logisticUnit6;
+    }
+
+    public void setLogisticUnit6(int logisticUnit6) {
+        this.logisticUnit6 = logisticUnit6;
+    }
+
+    public int getInsuranceInventoryType() {
+        return insuranceInventoryType;
+    }
+
+    public void setInsuranceInventoryType(int insuranceInventoryType) {
+        this.insuranceInventoryType = insuranceInventoryType;
+    }
+    
+    
 
     public int getInsuranceInventory() {
         return insuranceInventory;

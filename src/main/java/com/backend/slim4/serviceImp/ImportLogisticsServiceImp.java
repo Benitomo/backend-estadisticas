@@ -33,14 +33,33 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from importlogistics";
+            String sql = "SELECT * from logistics";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                ImportLogistics a = new ImportLogistics();
-                a.setControlId(rs.getInt("controlid"));
-                a.setWarehousecode(rs.getString("warehousecode"));
-                a.setCode(rs.getString("articlecode"));
-                logistics.add(a);
+                ImportLogistics i = new ImportLogistics();
+                i.setControlId(rs.getInt("controlid"));
+                i.setWarehousecode(rs.getString("warehousecode"));
+                i.setCode(rs.getString("articlecode"));
+                i.setSupplierNumber(rs.getString("suppliernumber"));
+                i.setSupplierName(rs.getString("suppliername"));
+                i.setLeadTime(rs.getBigDecimal("leadtime"));
+                i.setReviewTime(rs.getBigDecimal("reviewtime"));
+                i.setSupplierReliability(rs.getBigDecimal("supplierreliability"));
+                i.setSupplierReliabilityType(rs.getInt("supplierreliabilitytype"));
+                i.setStockedItem(rs.getString("stockeditem"));
+                i.setMOQ(rs.getInt("moq"));
+                i.setIOQ(rs.getInt("ioq"));
+                i.setEOQ(rs.getInt("eoq"));
+                i.setLogisticUnit1(rs.getInt("logisticunit1"));
+                i.setLogisticUnit2(rs.getInt("logisticunit2"));
+                i.setLogisticUnit3(rs.getInt("logisticunit3"));
+                i.setLogisticUnit4(rs.getInt("logisticunit4"));
+                i.setLogisticUnit5(rs.getInt("logisticunit5"));
+                i.setLogisticUnit6(rs.getInt("logisticunit6"));
+                i.setInsuranceInventory(rs.getInt("insuranceinventory"));
+                i.setInsuranceInventoryType(rs.getInt("insuranceinventorytype"));
+                i.setTargetServiceLevel(rs.getBigDecimal("targetservicelevel"));
+                logistics.add(i);
             }
             cnt.close();
         } catch (SQLException ex) {
