@@ -3,6 +3,7 @@ package com.backend.slim4.controller ;
 
 import com.backend.slim4.model.ArticleFilter;
 import com.backend.slim4.service.ArticleFilterService;
+import com.backend.slim4.service.ImportLogisticsService;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,12 +26,21 @@ public class Controlador {
     @Autowired
     ArticleFilterService service;
     
+    @Autowired
+    ImportLogisticsService logistics_service;
+    
     
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
     public ResponseEntity articleFilter()throws IOException{
         return service.articleFilterSelect();
+    } 
+    
+    // Traer iport_logistics de Informix e insertar en SqlServer
+    @GetMapping(path = {"/import-logistics"})
+    public ResponseEntity importLogistics()throws IOException{
+        return logistics_service.importLogisticsSelect();
     } 
     
     // Test
