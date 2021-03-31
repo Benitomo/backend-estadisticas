@@ -59,6 +59,13 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                 i.setInsuranceInventory(rs.getInt("insuranceinventory"));
                 i.setInsuranceInventoryType(rs.getInt("insuranceinventorytype"));
                 i.setTargetServiceLevel(rs.getBigDecimal("targetservicelevel"));
+                i.setPlcArticleCode(rs.getString("plcarticlecode"));
+                i.setPlcDate(rs.getDate("plcdate"));
+                i.setPlcPerc(rs.getBigDecimal("plcperc"));
+                i.setAbcClass(rs.getString("abcclass"));
+                i.setBuyingPrice(rs.getBigDecimal("buyinprice"));
+                i.setMSQ(rs.getInt("msq"));
+                i.setISQ(rs.getInt("isq"));
                 logistics.add(i);
             }
             cnt.close();
