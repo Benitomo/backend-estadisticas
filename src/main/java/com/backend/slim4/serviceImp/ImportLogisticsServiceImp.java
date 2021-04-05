@@ -10,13 +10,16 @@ import com.backend.slim4.model.ImportLogistics;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.google.gson.Gson;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,9 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT * from logistics";
+            String sql = "SELECT first 10 * from logistics";
             ResultSet rs = stmt.executeQuery(sql);
+            System.out.print(" Entré a select informix ");
             while (rs.next()) {
                 ImportLogistics i = new ImportLogistics();
                 i.setControlId(rs.getInt("controlid"));
@@ -96,19 +100,18 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.sqlServer();
             Statement stmt = cnt.createStatement();
-            emptyTable(stmt);
+            int r = emptyTable(stmt);
+            System.out.print(" Resultado Delete" + r);
             insertDataTable(stmt,a);
-            logistics = getArticleFilterInfo(stmt);
+            //logistics = getArticleFilterInfo(stmt);
             cnt.close();
         } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        HashMap<String, String> map = new HashMap<>();
-        map.put("Informix:", " se obtuvo la información correctamente!");
-        map.put("Sql Server:", " se insertó la interface correctamente!");
-        map.put("Datos de S4Import_ArticleFilter en Sql Server:", g.toJson(logistics).replaceAll("/", ""));
-        return new ResponseEntity(map, HttpStatus.OK);
+        JSONObject item = new JSONObject();
+        item.put("Informix", "se obtuvo la información correctamente!");
+        item.put("Datos de S4Import_Logistics en Sql Server:",logistics);
+        return new ResponseEntity(item, HttpStatus.OK);
         
     }
     
@@ -118,12 +121,13 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             result = stmt.executeUpdate(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     } 
     
     public int insertDataTable(Statement stmt, ArrayList<ImportLogistics> il) throws SQLException{
+        
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Logistics](controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ) SELECT * FROM  (VALUES";
             for (int i = 0; i < il.size(); i++) {
                 sql =  (i==il.size()-1)? 
@@ -136,13 +140,39 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
     
     public ArrayList<ImportLogistics> getArticleFilterInfo(Statement stmt) throws SQLException{
         ArrayList<ImportLogistics> logistics = new ArrayList<>();
-        ResultSet rs = stmt.executeQuery("select * from [slim4interface_test].[dbo].[S4Import_Logistics]");
+        ResultSet rs = stmt.executeQuery("select controlId,TRIM(warehouse) as warehouse,TRIM(code) as code,TRIM(supplierNumber) as supplierNumber,TRIM(supplierName) as supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,TRIM(plcArticleCode) plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ from [slim4interface_test].[dbo].[S4Import_Logistics]");
             while (rs.next()) {
-                ImportLogistics ar = new ImportLogistics();
-                ar.setControlId(rs.getInt("controlId"));
-                ar.setWarehousecode(rs.getString("warehouse"));
-                ar.setCode(rs.getString("code"));
-                logistics.add(ar);
+                ImportLogistics i = new ImportLogistics();
+                i.setControlId(rs.getInt("controlId"));
+                i.setWarehousecode(rs.getString("warehouse"));
+                i.setCode(rs.getString("code"));
+                i.setSupplierNumber(rs.getString("supplierNumber"));
+                i.setSupplierName(rs.getString("supplierName"));
+                i.setLeadTime(rs.getBigDecimal("leadTime"));
+                i.setReviewTime(rs.getBigDecimal("reviewTime"));
+                i.setSupplierReliability(rs.getBigDecimal("supplierReliability"));
+                i.setSupplierReliabilityType(rs.getInt("supplierReliabilityType"));
+                i.setStockedItem(rs.getString("stockedItem"));
+                i.setMOQ(rs.getInt("MOQ"));
+                i.setIOQ(rs.getInt("IOQ"));
+                i.setEOQ(rs.getInt("EOQ"));
+                i.setLogisticUnit1(rs.getInt("logisticUnit1"));
+                i.setLogisticUnit2(rs.getInt("logisticUnit2"));
+                i.setLogisticUnit3(rs.getInt("logisticUnit3"));
+                i.setLogisticUnit4(rs.getInt("logisticUnit4"));
+                i.setLogisticUnit5(rs.getInt("logisticUnit5"));
+                i.setLogisticUnit6(rs.getInt("logisticUnit6"));
+                i.setInsuranceInventory(rs.getInt("insuranceInventory"));
+                i.setInsuranceInventoryType(rs.getInt("insuranceInventoryType"));
+                i.setTargetServiceLevel(rs.getBigDecimal("targetServiceLevel"));
+                i.setPlcArticleCode(rs.getString("plcArticleCode"));
+                i.setPlcDate(rs.getDate("plcDate"));
+                i.setPlcPerc(rs.getBigDecimal("plcPerc"));
+                i.setAbcClass(rs.getString("abcClass"));
+                i.setBuyingPrice(rs.getBigDecimal("buyingPrice"));
+                i.setMSQ(rs.getInt("MSQ"));
+                i.setISQ(rs.getInt("ISQ"));
+                logistics.add(i);
             }
         return logistics;    
     }

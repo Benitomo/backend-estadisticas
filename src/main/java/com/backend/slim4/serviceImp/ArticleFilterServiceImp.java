@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
+            String sql = "SELECT first 10 controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ArticleFilter a = new ArticleFilter();
@@ -69,12 +70,10 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        HashMap<String, String> map = new HashMap<>();
-        map.put("Informix:", " se obtuvo la información correctamente!");
-        map.put("Sql Server:", " se insertó la interface correctamente!");
-        map.put("Datos de S4Import_ArticleFilter en Sql Server:", g.toJson(articles).replaceAll("/", ""));
-        return new ResponseEntity(map, HttpStatus.OK);
+        JSONObject item = new JSONObject();
+        item.put("Informix", "se obtuvo la información correctamente!");
+        item.put("Datos de S4Import_ArticleFilter en Sql Server:",articles);
+        return new ResponseEntity(item, HttpStatus.OK);
         
     }
      
@@ -93,7 +92,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_ArticleFilter](controlId, warehouse, code) SELECT * FROM  (VALUES";
             for (int i = 0; i < a.size(); i++) {
                 sql =  (i==a.size()-1)? 
-                            sql + "(" + a.get(i).getControlId() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getCode() + "')) AS temporal(controlId, warehouse, code)"
+                            sql + "(" + a.get(i).getControlId() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getCode() + "')) AS article(controlId, warehouse, code)"
                             :
                             sql + "(" + a.get(i).getControlId() + ", '"+ a.get(i).getWarehousecode() +"', '" + a.get(i).getCode() + "'),";
             }
