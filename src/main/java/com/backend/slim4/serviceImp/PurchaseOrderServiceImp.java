@@ -2,8 +2,8 @@
 package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.GetConnection;
-import com.backend.slim4.model.ImportPurchaseOrder;
-import com.backend.slim4.service.ImportPurchaseOrderService;
+import com.backend.slim4.model.PurchaseOrder;
+import com.backend.slim4.service.PurchaseOrderService;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,13 +16,15 @@ import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
-public class ImportPurchaseOrderServiceImp implements ImportPurchaseOrderService{
+@Service
+public class PurchaseOrderServiceImp implements PurchaseOrderService{
     @Override
-    public ResponseEntity importPurchaseOrderSelect() {
+    public ResponseEntity purchaseOrderSelect() {
         String tituloResp  = "";
         String mensajeResp = "";
-    ArrayList<ImportPurchaseOrder> purchase = new ArrayList<>();
+    ArrayList<PurchaseOrder> purchase = new ArrayList<>();
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
@@ -30,7 +32,7 @@ public class ImportPurchaseOrderServiceImp implements ImportPurchaseOrderService
             ResultSet rs = stmt.executeQuery(sql);
             System.out.print(" Entré a select informix ");
             while (rs.next()) {
-                ImportPurchaseOrder po = new ImportPurchaseOrder();
+                PurchaseOrder po = new PurchaseOrder();
                 po.setControlId(rs.getInt("controlid"));
                 po.setWarehousecode(rs.getString("warehousecode"));
                 po.setCode(rs.getString("articlecode"));
@@ -56,13 +58,13 @@ public class ImportPurchaseOrderServiceImp implements ImportPurchaseOrderService
             }
             cnt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(purchase.size()>0){
             try {
-                return importPurchaseOrderInsert(purchase);
+                return purchaseOrderInsert(purchase);
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         } else {
@@ -75,8 +77,8 @@ public class ImportPurchaseOrderServiceImp implements ImportPurchaseOrderService
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
     
-    public ResponseEntity importPurchaseOrderInsert(ArrayList<ImportPurchaseOrder> p) throws ClassNotFoundException {
-        ArrayList<ImportPurchaseOrder> purchase = new ArrayList<>();
+    public ResponseEntity purchaseOrderInsert(ArrayList<PurchaseOrder> p) throws ClassNotFoundException {
+        ArrayList<PurchaseOrder> purchase = new ArrayList<>();
         Gson g = new Gson();
         try {
             Connection cnt = GetConnection.sqlServer();
@@ -106,7 +108,7 @@ public class ImportPurchaseOrderServiceImp implements ImportPurchaseOrderService
         return result;
     } 
     
-    public int insertDataTable(Statement stmt, ArrayList<ImportPurchaseOrder> il) throws SQLException{
+    public int insertDataTable(Statement stmt, ArrayList<PurchaseOrder> il) throws SQLException{
         
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_PurchaseOrder]"
                 + "(controlId,warehouse,code,number,deliveryDate,openQuantity,supplier,comment,originalQuantity,suppliedQuantity,freeText1,freeText2,freeNumber1,freeNumber2,type,line,excludeSetting, excludeDate, excludeFromAM, supplierNumber, supplierName)"

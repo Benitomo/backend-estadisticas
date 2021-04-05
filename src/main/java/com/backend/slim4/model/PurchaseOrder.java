@@ -12,7 +12,7 @@ import java.sql.Date;
  *
  * @author USUARIO
  */
-public class ImportPurchaseOrder {
+public class PurchaseOrder {
   int controlId;
   String warehousecode;
   String code;

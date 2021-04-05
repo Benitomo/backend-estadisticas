@@ -1,14 +1,12 @@
 
 package com.backend.slim4.controller ;
 
-import com.backend.slim4.model.ArticleFilter;
 import com.backend.slim4.service.ArticleFilterService;
 import com.backend.slim4.service.ImportLogisticsService;
-import com.backend.slim4.service.ImportPurchaseOrderService;
+import com.backend.slim4.service.PurchaseOrderService;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,7 @@ public class Controlador {
     ImportLogisticsService logistics_service;
     
     @Autowired
-    ImportPurchaseOrderService purchase_service;
+    PurchaseOrderService purchase_service;
     
     
     // Traer article_filter de Informix e insertar en SqlServer
@@ -47,9 +45,9 @@ public class Controlador {
     } 
     
     // Traer iport_logistics de Informix e insertar en SqlServer
-    @GetMapping(path = {"/import-purchase-order"})
+    @GetMapping(path = {"/purchase-order"})
     public ResponseEntity importPurchaseOrder()throws IOException{
-        return purchase_service.importPurchaseOrderSelect();
+        return purchase_service.purchaseOrderSelect();
     } 
     
     // Test
