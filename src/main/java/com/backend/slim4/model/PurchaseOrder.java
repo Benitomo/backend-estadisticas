@@ -16,7 +16,7 @@ public class PurchaseOrder {
   int controlId;
   String warehousecode;
   String code;
-  int number;
+  String number;
   Date deliveryDate;
   int openQuantity;
   String supplier;
@@ -59,11 +59,11 @@ public class PurchaseOrder {
         this.code = code;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

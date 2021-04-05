@@ -28,21 +28,20 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 10 * from purchaseorder";
+            String sql = "SELECT * from purchaseorder";
             ResultSet rs = stmt.executeQuery(sql);
-            System.out.print(" Entré a select informix ");
             while (rs.next()) {
                 PurchaseOrder po = new PurchaseOrder();
                 po.setControlId(rs.getInt("controlid"));
                 po.setWarehousecode(rs.getString("warehousecode"));
                 po.setCode(rs.getString("articlecode"));
-                po.setNumber(rs.getInt("numbers"));
+                po.setNumber(rs.getString("numbers"));
                 po.setDeliveryDate(rs.getDate("deliverydate"));
                 po.setOpenQuantity(rs.getInt("openquantity"));
                 po.setSupplier(rs.getString("supplier"));
                 po.setComment(rs.getString("comments"));
                 po.setOriginalQuantity(rs.getInt("originalquantity"));
-                po.setSuppliedQuantity(rs.getInt("supplierquantity"));
+                po.setSuppliedQuantity(rs.getInt("suppliedquantity"));
                 po.setFreeText1(rs.getString("freetext1"));
                 po.setFreeText2(rs.getString("freetext2"));
                 po.setFreeNumber1(rs.getBigDecimal("freenumber1"));
@@ -78,21 +77,27 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
     }
     
     public ResponseEntity purchaseOrderInsert(ArrayList<PurchaseOrder> p) throws ClassNotFoundException {
-        ArrayList<PurchaseOrder> purchase = new ArrayList<>();
-        Gson g = new Gson();
+        String tituloResp = "";
+        String mensajeResp = "";
         try {
             Connection cnt = GetConnection.sqlServer();
             Statement stmt = cnt.createStatement();
             int r = emptyTable(stmt);
-            System.out.print(" Resultado Delete" + r);
+            if(r>=0){
             insertDataTable(stmt,p);
-            //logistics = getArticleFilterInfo(stmt);
+            tituloResp = "Éxito";
+            mensajeResp = "se ejecutó la interface PurchaseOrder correctamente!";
+            }
+            else{
+            tituloResp = "Error";
+            mensajeResp = "No se pudo eliminar los registros de la tabla S4Import_PurchaseOrder previo a realizar la inserción.";
+            }
             cnt.close();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         JSONObject item = new JSONObject();
-        item.put("Éxito", "se ejecutó la interface PurchaseOrder correctamente!");
+        item.put(tituloResp, mensajeResp);
         return new ResponseEntity(item, HttpStatus.OK);
         
     }
