@@ -15,10 +15,6 @@ Mira **Deployment** para conocer como desplegar el proyecto.
 - Maven
 - Tomcat
 
-```
-Da un ejemplo
-```
-
 ### Ejecución 🔧
 
 Conectado a la vpn de Impocali tienes acceso a las bases de datos de Informix que contienen la información que el programa traera para exportar a la interface, o bien insertar en Sql Server (bases de datos de slim4).
@@ -28,7 +24,7 @@ mvn spring-boot:run
 
 ## Despliegue en producción 📦
 
-El servidor de producción se encuentra en la platafora de Google cuya ip pública es "34.74.107.94" y su ip privada es "10.142.0.45".
+El servidor de producción se encuentra en la platafora de Google cuya ip pública es "" y su ip privada es "10.142.0.58".
 
 ## Primer paso 🛠️
 
