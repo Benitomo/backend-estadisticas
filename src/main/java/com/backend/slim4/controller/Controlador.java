@@ -38,15 +38,27 @@ public class Controlador {
         return service.articleFilterSelect();
     } 
     
-    // Traer iport_logistics de Informix e insertar en SqlServer
-    @GetMapping(path = {"/import-logistics"})
+    // Traer import_logistics de Informix e insertar en SqlServer
+    @GetMapping(path = {"/logistics"})
     public ResponseEntity importLogistics()throws IOException{
         return logistics_service.importLogisticsSelect();
     } 
     
-    // Traer iport_logistics de Informix e insertar en SqlServer
+    // Traer purchase_order de Informix e insertar en SqlServer
     @GetMapping(path = {"/purchase-order"})
     public ResponseEntity importPurchaseOrder()throws IOException{
+        return purchase_service.purchaseOrderSelect();
+    } 
+    
+    // Traer confirmed_demand de Informix e insertar en SqlServer
+    @GetMapping(path = {"/confirmed-demand"})
+    public ResponseEntity importConfirmedDemand()throws IOException{
+        return purchase_service.purchaseOrderSelect();
+    } 
+    
+    // Traer confirmed_demand de Informix e insertar en SqlServer
+    @GetMapping(path = {"/transactions"})
+    public ResponseEntity importTransactions()throws IOException{
         return purchase_service.purchaseOrderSelect();
     } 
     
@@ -55,18 +67,6 @@ public class Controlador {
     public String helloWorld(){
         return "Hola Mundo";
     } 
-    
-    
-    // Método para leer el documento pdf, encontrar la palabra clave como parámetro y llamar método para obtener las páginas.
-    @PostMapping(path = {"/leer-pdf"})
-    public ResponseEntity leerPdf() throws IOException, InterruptedException {
-        Gson gson = new Gson();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("encontrado", "testing");
-        map.put("paginas", "testing");
-        map.put("no_encontrado", "testing");
-        return new ResponseEntity(map, HttpStatus.OK);
-    }
     
     
 }

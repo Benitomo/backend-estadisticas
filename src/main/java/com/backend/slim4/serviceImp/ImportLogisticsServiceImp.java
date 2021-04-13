@@ -36,9 +36,8 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 10 * from logistics";
+            String sql = "SELECT first 10000 * from logistics";
             ResultSet rs = stmt.executeQuery(sql);
-            System.out.print(" Entré a select informix ");
             while (rs.next()) {
                 ImportLogistics i = new ImportLogistics();
                 i.setControlId(rs.getInt("controlid"));
@@ -95,22 +94,27 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
     }
     
     public ResponseEntity importLogisticsInsert(ArrayList<ImportLogistics> a) throws ClassNotFoundException {
-        ArrayList<ImportLogistics> logistics = new ArrayList<>();
-        Gson g = new Gson();
+        String tituloResp = "";
+        String mensajeResp = "";
         try {
             Connection cnt = GetConnection.sqlServer();
             Statement stmt = cnt.createStatement();
             int r = emptyTable(stmt);
-            System.out.print(" Resultado Delete" + r);
+            if(r>=0){
             insertDataTable(stmt,a);
-            //logistics = getArticleFilterInfo(stmt);
+            tituloResp = "Éxito";
+            mensajeResp = "se ejecutó la interface Logistics correctamente!";
+            }
+            else{
+            tituloResp = "Error";
+            mensajeResp = "No se pudo eliminar los registros de la tabla S4Import_ImportLogistics previo a realizar la inserción.";
+            }
             cnt.close();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         JSONObject item = new JSONObject();
-        item.put("Informix", "se obtuvo la información correctamente!");
-        item.put("Datos de S4Import_Logistics en Sql Server:",logistics);
+        item.put(tituloResp, mensajeResp);
         return new ResponseEntity(item, HttpStatus.OK);
         
     }
@@ -128,13 +132,77 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
     
     public int insertDataTable(Statement stmt, ArrayList<ImportLogistics> il) throws SQLException{
         
-        String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Logistics](controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ) SELECT * FROM  (VALUES";
+        String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Logistics]"
+                + "(controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ) "
+                + "SELECT * FROM  (VALUES";
             for (int i = 0; i < il.size(); i++) {
                 sql =  (i==il.size()-1)? 
-                            sql + "(" + il.get(i).getControlId() + ", '"+ il.get(i).getWarehousecode() +"', '" + il.get(i).getCode() + "', '" + il.get(i).getSupplierNumber()+ "', '" + il.get(i).getSupplierName()+ "', '" + il.get(i).getLeadTime()+ "', '" + il.get(i).getReviewTime()+ "', '" + il.get(i).getSupplierReliability()+ "', '" + il.get(i).getSupplierReliabilityType()+ "', '" + il.get(i).getStockedItem()+ "', '" + il.get(i).getMOQ()+ "', '" + il.get(i).getIOQ()+ "', '" + il.get(i).getEOQ()+ "', '" + il.get(i).getLogisticUnit1()+ "', '" + il.get(i).getLogisticUnit2()+ "', '" + il.get(i).getLogisticUnit3()+ "', '" + il.get(i).getLogisticUnit4()+ "', '" + il.get(i).getLogisticUnit5()+ "', '" + il.get(i).getLogisticUnit6()+ "', '" + il.get(i).getInsuranceInventory()+ "', '" + il.get(i).getInsuranceInventoryType()+ "', '" + il.get(i).getTargetServiceLevel()+ "', '" + il.get(i).getPlcArticleCode()+ "', '" + il.get(i).getPlcDate()+ "', '" + il.get(i).getPlcPerc()+ "', '" + il.get(i).getAbcClass()+ "', '" + il.get(i).getBuyingPrice()+ "', '" + il.get(i).getMSQ()+ "', '" + il.get(i).getISQ()+ "')) as temporal(controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ)"
+                        sql + "(" 
+                        + il.get(i).getControlId() + ", "
+                        + "'"+ il.get(i).getWarehousecode() +"', "
+                        + "'" + il.get(i).getCode() + "', "
+                        + "'" + il.get(i).getSupplierNumber()+ "', "
+                        + "'" + il.get(i).getSupplierName()+ "', "
+                        + "'" + il.get(i).getLeadTime()+ "', "
+                        + "'" + il.get(i).getReviewTime()+ "', "
+                        + "'" + il.get(i).getSupplierReliability()+ "', "
+                        + "'" + il.get(i).getSupplierReliabilityType()+ "', "
+                        + "'" + il.get(i).getStockedItem()+ "', "
+                        + "'" + il.get(i).getMOQ()+ "', "
+                        + "'" + il.get(i).getIOQ()+ "', "
+                        + "'" + il.get(i).getEOQ()+ "', "
+                        + "'" + il.get(i).getLogisticUnit1()+ "', "
+                        + "'" + il.get(i).getLogisticUnit2()+ "', "
+                        + "'" + il.get(i).getLogisticUnit3()+ "', "
+                        + "'" + il.get(i).getLogisticUnit4()+ "', "
+                        + "'" + il.get(i).getLogisticUnit5()+ "', "
+                        + "'" + il.get(i).getLogisticUnit6()+ "', "
+                        + "'" + il.get(i).getInsuranceInventory()+ "', "
+                        + "'" + il.get(i).getInsuranceInventoryType()+ "', "
+                        + "'" + il.get(i).getTargetServiceLevel()+ "', "
+                        + "'" + il.get(i).getPlcArticleCode()+ "', "
+                        + "'" + il.get(i).getPlcDate()+ "', "
+                        + "'" + il.get(i).getPlcPerc()+ "', "
+                        + "'" + il.get(i).getAbcClass()+ "', "
+                        + "'" + il.get(i).getBuyingPrice()+ "', "
+                        + "'" + il.get(i).getMSQ()+ "', "
+                        + "'" + il.get(i).getISQ()+ "'"
+                        + ")) "
+                        + "as temporal"
+                        + "(controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ)"
                             :
-                            sql + "(" + il.get(i).getControlId() + ", '"+ il.get(i).getWarehousecode() +"', '" + il.get(i).getCode() + "', '" + il.get(i).getSupplierNumber()+ "', '" + il.get(i).getSupplierName()+ "', '" + il.get(i).getLeadTime()+ "', '" + il.get(i).getReviewTime()+ "', '" + il.get(i).getSupplierReliability()+ "', '" + il.get(i).getSupplierReliabilityType()+ "', '" + il.get(i).getStockedItem()+ "', '" + il.get(i).getMOQ()+ "', '" + il.get(i).getIOQ()+ "', '" + il.get(i).getEOQ()+ "', '" + il.get(i).getLogisticUnit1()+ "', '" + il.get(i).getLogisticUnit2()+ "', '" + il.get(i).getLogisticUnit3()+ "', '" + il.get(i).getLogisticUnit4()+ "', '" + il.get(i).getLogisticUnit5()+ "', '" + il.get(i).getLogisticUnit6()+ "', '" + il.get(i).getInsuranceInventory()+ "', '" + il.get(i).getInsuranceInventoryType()+ "', '" + il.get(i).getTargetServiceLevel()+ "', '" + il.get(i).getPlcArticleCode()+ "', '" + il.get(i).getPlcDate()+ "', '" + il.get(i).getPlcPerc()+ "', '" + il.get(i).getAbcClass()+ "', '" + il.get(i).getBuyingPrice()+ "', '" + il.get(i).getMSQ()+ "', '" + il.get(i).getISQ()+ "'),";
-            }
+                        sql + "(" 
+                        + il.get(i).getControlId() + ", "
+                        + "'"+ il.get(i).getWarehousecode() +"', "
+                        + "'" + il.get(i).getCode() + "', "
+                        + "'" + il.get(i).getSupplierNumber()+ "', "
+                        + "'" + il.get(i).getSupplierName()+ "', "
+                        + "'" + il.get(i).getLeadTime()+ "', "
+                        + "'" + il.get(i).getReviewTime()+ "', "
+                        + "'" + il.get(i).getSupplierReliability()+ "', "
+                        + "'" + il.get(i).getSupplierReliabilityType()+ "', "
+                        + "'" + il.get(i).getStockedItem()+ "', "
+                        + "'" + il.get(i).getMOQ()+ "', "
+                        + "'" + il.get(i).getIOQ()+ "', "
+                        + "'" + il.get(i).getEOQ()+ "', "
+                        + "'" + il.get(i).getLogisticUnit1()+ "', "
+                        + "'" + il.get(i).getLogisticUnit2()+ "', "
+                        + "'" + il.get(i).getLogisticUnit3()+ "', "
+                        + "'" + il.get(i).getLogisticUnit4()+ "', "
+                        + "'" + il.get(i).getLogisticUnit5()+ "', "
+                        + "'" + il.get(i).getLogisticUnit6()+ "', "
+                        + "'" + il.get(i).getInsuranceInventory()+ "', "
+                        + "'" + il.get(i).getInsuranceInventoryType()+ "', "
+                        + "'" + il.get(i).getTargetServiceLevel()+ "', "
+                        + "'" + il.get(i).getPlcArticleCode()+ "', "
+                        + "'" + il.get(i).getPlcDate()+ "', "
+                        + "'" + il.get(i).getPlcPerc()+ "', "
+                        + "'" + il.get(i).getAbcClass()+ "', "
+                        + "'" + il.get(i).getBuyingPrice()+ "', "
+                        + "'" + il.get(i).getMSQ()+ "', "
+                        + "'" + il.get(i).getISQ()+ "'),";}
+            
+            System.out.print("\n" + " Query de inserción Logistics: " + "\n" + sql + "\n");
         return stmt.executeUpdate(sql);
     } 
     

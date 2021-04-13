@@ -25,11 +25,13 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
     
     @Override
     public ResponseEntity articleFilterSelect() {
+        String tituloResp  = "";
+        String mensajeResp = "";
         ArrayList<ArticleFilter> articles = new ArrayList<>();
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 10 controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
+            String sql = "SELECT first 70000 controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ArticleFilter a = new ArticleFilter();
@@ -49,30 +51,39 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
                 Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             
+        } else {
+            tituloResp = "Error";
+            mensajeResp = "La tabla articlefilter está vacía o hay inconvenientes de columnas";
         }
         
         HashMap<String, String> map = new HashMap<>();
-        map.put("Error", "No se pudo traer información de la base de datos Informix");
+        map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
         
     }
     
      public ResponseEntity articleFilterInsert(ArrayList<ArticleFilter> a) throws ClassNotFoundException {
-        ArrayList<ArticleFilter> articles = new ArrayList<>();
-        Gson g = new Gson();
+        String tituloResp = "";
+        String mensajeResp = ""; 
         try {
             Connection cnt = GetConnection.sqlServer();
             Statement stmt = cnt.createStatement();
-            emptyTable(stmt);
+            int r = emptyTable(stmt);
+            if(r>=0){
             insertDataTable(stmt,a);
-            articles = getArticleFilterInfo(stmt);
+            tituloResp = "Éxito";
+            mensajeResp = "se ejecutó la interface ArticleFilter correctamente!";
+            }
+            else{
+            tituloResp = "Error";
+            mensajeResp = "No se pudo eliminar los registros de la tabla S4Import_ArticleFilter previo a realizar la inserción.";
+            }
             cnt.close();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         JSONObject item = new JSONObject();
-        item.put("Informix", "se obtuvo la información correctamente!");
-        item.put("Datos de S4Import_ArticleFilter en Sql Server:",articles);
+        item.put(tituloResp, mensajeResp);
         return new ResponseEntity(item, HttpStatus.OK);
         
     }

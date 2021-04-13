@@ -4,7 +4,6 @@ package com.backend.slim4.serviceImp;
 import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.PurchaseOrder;
 import com.backend.slim4.service.PurchaseOrderService;
-import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT * from purchaseorder";
+            String sql = "SELECT first 70000 * from purchaseorder";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 PurchaseOrder po = new PurchaseOrder();
