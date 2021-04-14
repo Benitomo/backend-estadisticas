@@ -58,7 +58,7 @@ Actualizar jar y correr la aplicación:
 sudo su
 
 cd /btw/
-rm -f /btw/api-old.war
+rm -f /btw/api-old/api-old.jar
 mv /btw/api-new.jar /btw/api-old/api-old.jar
 mv /btw/api-new/api-new.jar /btw/api-new.jar
 
