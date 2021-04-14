@@ -23,7 +23,7 @@ Dentro la carpeta del proyecto abrir Git Bash, Poweshell o la terminal del siste
 ```
 mvn spring-boot:run
 ```
-## Despliegue en producción 📦
+## Deployment 📦
 
 El servidor de producción se encuentra en la platafora de Google cuya ip pública es "35.196.28.17" y su ip privada es "10.142.0.58".
 
@@ -58,4 +58,9 @@ mv /btw/api-new/api-new.jar /btw/api-new.jar
 
 java -jar api-new.jar
 
+```
+
+La aplicacion debería estar corriendo en la siguiente dirección publica:
+```
+http://35.196.28.17:8080/slim4/nombre_de_la_interface
 ```
