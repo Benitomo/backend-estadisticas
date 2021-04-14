@@ -27,7 +27,7 @@ mvn spring-boot:run
 
 El servidor de producción se encuentra en la platafora de Google cuya ip pública es "35.196.28.17" y su ip privada es "10.142.0.58".
 
-## Comencemos 🛠️
+## Primer paso 🛠️
 
 Empaquetamiento del aplicativo: ubicados en la raiz del proyecto abrimos la consola o terminal y ejecutamos el siguiente comando:
 
