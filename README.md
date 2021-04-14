@@ -38,5 +38,24 @@ mvn clean package -Pjar
 
 Luego, conectados a la vpn de Impocali, hay que enviar el empaquetado mediante scp al servidor de producción:
 ```
-scp target/api.jar 10.142.0.58:/btw/api-new.jar
+scp target/api.jar 10.142.0.58:/btw/api-new/api-new.jar
+```
+
+Luego, hay que conectarse al server de producción por ssh:
+```
+ssh 10.142.0.58
+```
+
+Actualizar jar y correr la aplicación:
+
+```
+sudo su
+
+cd /btw/
+rm -f /btw/api-old.war
+mv /btw/api-new.jar /btw/api-old/api-old.jar
+mv /btw/api-new/api-new.jar /btw/api-new.jar
+
+java -jar api-new.jar
+
 ```
