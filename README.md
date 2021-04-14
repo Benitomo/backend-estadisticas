@@ -20,22 +20,23 @@ Mira **Deployment** para conocer como desplegar el proyecto.
 Conectado a la vpn de Impocali tienes acceso a las bases de datos de Informix que contienen la información que el programa traera para exportar a la interface, o bien insertar en Sql Server (bases de datos de slim4).
 
 Dentro la carpeta del proyecto abrir Git Bash, Poweshell o la terminal del sistema y ejecutas el siguiente comando:
+```
 mvn spring-boot:run
-
+```
 ## Despliegue en producción 📦
 
 El servidor de producción se encuentra en la platafora de Google cuya ip pública es "35.196.28.17" y su ip privada es "10.142.0.58".
 
 ## Primer paso 🛠️
 
-Empaquetamiento del aplicativo
+Empaquetamiento del aplicativo: ubicados en la raiz del proyecto abrimos la consola o terminal y ejecutamos el siguiente comando:
 
 ```
 * Power Shell
 mvn clean package -Pjar
 ```
 
-Luego, conectados a la vpn de Impocali, hay que enviar el empaquetado mediante scp al servidor de producción, ubicados en la raiz del proyecto abrimos la consola o terminal y ejecutamos el siguiente comando:
+Luego, conectados a la vpn de Impocali, hay que enviar el empaquetado mediante scp al servidor de producción:
 ```
 scp target/api.jar 10.142.0.58:/btw/api-new.jar
 ```
