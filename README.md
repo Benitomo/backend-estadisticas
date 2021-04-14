@@ -27,7 +27,7 @@ mvn spring-boot:run
 
 El servidor de producción se encuentra en la platafora de Google cuya ip pública es "35.196.28.17" y su ip privada es "10.142.0.58".
 
-## Primer paso 🛠️
+## Comencemos 🛠️
 
 Empaquetamiento del aplicativo: ubicados en la raiz del proyecto abrimos la consola o terminal y ejecutamos el siguiente comando:
 
@@ -68,7 +68,7 @@ java -jar api-new.jar
 
 La aplicacion debería estar corriendo en la siguiente dirección publica:
 ```
-http://35.196.28.17:8080/slim4/nombre_de_la_interface
+http://35.196.28.17:8080/slim4/hello-world
 ```
 
 Si algo salió mal con el deployment:
