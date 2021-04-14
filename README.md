@@ -46,6 +46,12 @@ Luego, hay que conectarse al server de producción por ssh:
 ssh 10.142.0.58
 ```
 
+Monitoreamos si esta un tomcat corriendo:
+```
+ps -ef | grep java
+kill -9 [process id devuelto por el proceso anterior]
+```
+
 Actualizar jar y correr la aplicación:
 
 ```
@@ -63,4 +69,16 @@ java -jar api-new.jar
 La aplicacion debería estar corriendo en la siguiente dirección publica:
 ```
 http://35.196.28.17:8080/slim4/nombre_de_la_interface
+```
+
+Si algo salió mal con el deployment:
+```
+ps -ef | grep java
+kill -9 [process id devuelto por el proceso anterior]
+
+rm -f /btw/api-new.jar
+mv /btw/api-old/api-old.jar /btw/api-new.jar
+
+java -jar /btw/api-new.jar
+
 ```
