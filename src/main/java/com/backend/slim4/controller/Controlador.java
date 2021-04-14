@@ -2,8 +2,10 @@
 package com.backend.slim4.controller ;
 
 import com.backend.slim4.service.ArticleFilterService;
+import com.backend.slim4.service.ConfirmedDemandService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.backend.slim4.service.PurchaseOrderService;
+import com.backend.slim4.service.TransactionsService;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +33,11 @@ public class Controlador {
     @Autowired
     PurchaseOrderService purchase_service;
     
+    @Autowired
+    ConfirmedDemandService confirmed_service;
+    
+    @Autowired
+    TransactionsService transactions_service;
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
@@ -53,13 +60,13 @@ public class Controlador {
     // Traer confirmed_demand de Informix e insertar en SqlServer
     @GetMapping(path = {"/confirmed-demand"})
     public ResponseEntity importConfirmedDemand()throws IOException{
-        return purchase_service.purchaseOrderSelect();
+        return confirmed_service.confirmedDemandSelect();
     } 
     
     // Traer confirmed_demand de Informix e insertar en SqlServer
     @GetMapping(path = {"/transactions"})
     public ResponseEntity importTransactions()throws IOException{
-        return purchase_service.purchaseOrderSelect();
+        return transactions_service.transactionsSelect();
     } 
     
     // Test

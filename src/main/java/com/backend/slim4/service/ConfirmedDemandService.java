@@ -5,5 +5,5 @@ import org.springframework.http.ResponseEntity;
 
 
 public interface ConfirmedDemandService {
-    ResponseEntity confirmedDemandedSelect();
+    ResponseEntity confirmedDemandSelect();
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfirmedDemandServiceImp implements ConfirmedDemandService{
     @Override
-    public ResponseEntity confirmedDemandedSelect() {
+    public ResponseEntity confirmedDemandSelect() {
     String tituloResp  = "";
     String mensajeResp = "";
     ArrayList<ConfirmedDemand> confirmed = new ArrayList<>();
