@@ -59,7 +59,6 @@ public class TransactionsServiceImp implements TransactionsService {
                     + "ud4,"
                     + "transactionissuetime "
                     + "from transactions";
-            System.out.print("\n" + "Entré a traer la info de Informix" + "\n");
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Transactions t = new Transactions();
@@ -147,7 +146,6 @@ public class TransactionsServiceImp implements TransactionsService {
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
         int result = 0;
         try {
-            System.out.print("\n" + "Entré a eliminar la info de SQL Server" + "\n");
             result = stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
@@ -288,7 +286,6 @@ public class TransactionsServiceImp implements TransactionsService {
                         + "'" + t.get(i).getTransactionIssueTime()+ "'), ";
                         
             }
-        System.out.print("\n" + "Entré a insertar la info en SQL Server" + "\n");   
         return stmt.executeUpdate(sql);
     } 
 }

@@ -27,7 +27,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 70000 * from purchaseorder";
+            String sql = "SELECT first 1000 * from purchaseorder";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 PurchaseOrder po = new PurchaseOrder();
@@ -129,10 +129,10 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                         + "'" + il.get(i).getComment()+ "', "
                         + "'" + il.get(i).getOriginalQuantity()+ "', "
                         + "'" + il.get(i).getSuppliedQuantity()+ "', "
-                        + "'" + il.get(i).getFreeText1()+ "', "
-                        + "'" + il.get(i).getFreeText2()+ "', "
-                        + "'" + il.get(i).getFreeNumber1()+ "', "
-                        + "'" + il.get(i).getFreeNumber2()+ "', "
+                        + "'"  + il.get(i).getFreeText1()+ "', "
+                        + "'"  + il.get(i).getFreeText2()+ "', "
+                        + ""  + il.get(i).getFreeNumber1()+ ", "
+                        + ""  + il.get(i).getFreeNumber2()+ ", "
                         + "'" + il.get(i).getOrderTypeNumber()+ "', "
                         + "'" + il.get(i).getLine() + "', "
                         + "'" + il.get(i).getExcludeSetting()+ "', "
@@ -154,8 +154,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                         + "'" + il.get(i).getSuppliedQuantity()+ "', "
                         + "'" + il.get(i).getFreeText1()+ "', "
                         + "'" + il.get(i).getFreeText2()+ "', "
-                        + "'" + il.get(i).getFreeNumber1()+ "', "
-                        + "'" + il.get(i).getFreeNumber2()+ "', "
+                        + ""  + il.get(i).getFreeNumber1()+ ", "
+                        + ""  + il.get(i).getFreeNumber2()+ ", "
                         + "'" + il.get(i).getOrderTypeNumber()+ "', "
                         + "'" + il.get(i).getLine() + "', "
                         + "'" + il.get(i).getExcludeSetting()+ "', "

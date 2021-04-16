@@ -63,7 +63,7 @@ public class Controlador {
         return confirmed_service.confirmedDemandSelect();
     } 
     
-    // Traer confirmed_demand de Informix e insertar en SqlServer
+    // Traer transactions de Informix e insertar en SqlServer
     @GetMapping(path = {"/transactions"})
     public ResponseEntity importTransactions()throws IOException{
         return transactions_service.transactionsSelect();

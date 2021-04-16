@@ -36,7 +36,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 10000 * from logistics";
+            String sql = "SELECT first 1000 * from logistics";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ImportLogistics i = new ImportLogistics();
@@ -133,7 +133,35 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
     public int insertDataTable(Statement stmt, ArrayList<ImportLogistics> il) throws SQLException{
         
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Logistics]"
-                + "(controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ) "
+                + "(controlId,"
+                + "warehouse,"
+                + "code,"
+                + "supplierNumber,"
+                + "supplierName,"
+                + "leadTime,"
+                + "reviewTime,"
+                + "supplierReliability,"
+                + "supplierReliabilityType,"
+                + "stockedItem,"
+                + "MOQ,"
+                + "IOQ,"
+                + "EOQ,"
+                + "logisticUnit1,"
+                + "logisticUnit2,"
+                + "logisticUnit3,"
+                + "logisticUnit4,"
+                + "logisticUnit5,"
+                + "logisticUnit6,"
+                + "insuranceInventory,"
+                + "insuranceInventoryType,"
+                + "targetServiceLevel,"
+                + "plcArticleCode,"
+                + "plcDate,"
+                + "plcPerc,"
+                + "abcClass,"
+                + "buyingPrice,"
+                + "MSQ,"
+                + "ISQ) "
                 + "SELECT * FROM  (VALUES";
             for (int i = 0; i < il.size(); i++) {
                 sql =  (i==il.size()-1)? 
@@ -143,11 +171,12 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                         + "'" + il.get(i).getCode() + "', "
                         + "'" + il.get(i).getSupplierNumber()+ "', "
                         + "'" + il.get(i).getSupplierName()+ "', "
-                        + "'" + il.get(i).getLeadTime()+ "', "
-                        + "'" + il.get(i).getReviewTime()+ "', "
-                        + "'" + il.get(i).getSupplierReliability()+ "', "
+                        + ""  + il.get(i).getLeadTime()+ ", "
+                        + ""  + il.get(i).getReviewTime()+ ", "
+                        + ""  + il.get(i).getSupplierReliability()+ ", "
                         + "'" + il.get(i).getSupplierReliabilityType()+ "', "
-                        + "'" + il.get(i).getStockedItem()+ "', "
+                        + " " +null+","
+                        //+ "'" + il.get(i).getStockedItem()+ "', "
                         + "'" + il.get(i).getMOQ()+ "', "
                         + "'" + il.get(i).getIOQ()+ "', "
                         + "'" + il.get(i).getEOQ()+ "', "
@@ -159,29 +188,30 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                         + "'" + il.get(i).getLogisticUnit6()+ "', "
                         + "'" + il.get(i).getInsuranceInventory()+ "', "
                         + "'" + il.get(i).getInsuranceInventoryType()+ "', "
-                        + "'" + il.get(i).getTargetServiceLevel()+ "', "
+                        + ""  + il.get(i).getTargetServiceLevel()+ ", "
                         + "'" + il.get(i).getPlcArticleCode()+ "', "
                         + "'" + il.get(i).getPlcDate()+ "', "
-                        + "'" + il.get(i).getPlcPerc()+ "', "
-                        + "'" + il.get(i).getAbcClass()+ "', "
-                        + "'" + il.get(i).getBuyingPrice()+ "', "
+                        + ""  + il.get(i).getPlcPerc()+ ", "
+                        + ""+null+","
+                        //+ "'" + il.get(i).getAbcClass()+ "', "
+                        + ""  + il.get(i).getBuyingPrice()+ ", "
                         + "'" + il.get(i).getMSQ()+ "', "
                         + "'" + il.get(i).getISQ()+ "'"
-                        + ")) "
+                        + "))"
                         + "as temporal"
                         + "(controlId,warehouse,code,supplierNumber,supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ)"
                             :
                         sql + "(" 
                         + il.get(i).getControlId() + ", "
-                        + "'"+ il.get(i).getWarehousecode() +"', "
+                        + "'" + il.get(i).getWarehousecode() +"', "
                         + "'" + il.get(i).getCode() + "', "
                         + "'" + il.get(i).getSupplierNumber()+ "', "
                         + "'" + il.get(i).getSupplierName()+ "', "
-                        + "'" + il.get(i).getLeadTime()+ "', "
-                        + "'" + il.get(i).getReviewTime()+ "', "
-                        + "'" + il.get(i).getSupplierReliability()+ "', "
+                        + ""  + il.get(i).getLeadTime()+ ", "
+                        + ""  + il.get(i).getReviewTime()+ ", "
+                        + ""  + il.get(i).getSupplierReliability()+ ", "
                         + "'" + il.get(i).getSupplierReliabilityType()+ "', "
-                        + "'" + il.get(i).getStockedItem()+ "', "
+                        + " " +null+","
                         + "'" + il.get(i).getMOQ()+ "', "
                         + "'" + il.get(i).getIOQ()+ "', "
                         + "'" + il.get(i).getEOQ()+ "', "
@@ -193,55 +223,16 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                         + "'" + il.get(i).getLogisticUnit6()+ "', "
                         + "'" + il.get(i).getInsuranceInventory()+ "', "
                         + "'" + il.get(i).getInsuranceInventoryType()+ "', "
-                        + "'" + il.get(i).getTargetServiceLevel()+ "', "
+                        + ""  + il.get(i).getTargetServiceLevel()+ ", "
                         + "'" + il.get(i).getPlcArticleCode()+ "', "
                         + "'" + il.get(i).getPlcDate()+ "', "
-                        + "'" + il.get(i).getPlcPerc()+ "', "
-                        + "'" + il.get(i).getAbcClass()+ "', "
-                        + "'" + il.get(i).getBuyingPrice()+ "', "
+                        + ""  + il.get(i).getPlcPerc()+ ", "
+                        + ""+null+","
+                        + ""  + il.get(i).getBuyingPrice()+ ", "
                         + "'" + il.get(i).getMSQ()+ "', "
-                        + "'" + il.get(i).getISQ()+ "'),";}
-            
-            System.out.print("\n" + " Query de inserción Logistics: " + "\n" + sql + "\n");
+                        + "'" + il.get(i).getISQ()+ "'),";
+            }
         return stmt.executeUpdate(sql);
     } 
     
-    public ArrayList<ImportLogistics> getArticleFilterInfo(Statement stmt) throws SQLException{
-        ArrayList<ImportLogistics> logistics = new ArrayList<>();
-        ResultSet rs = stmt.executeQuery("select controlId,TRIM(warehouse) as warehouse,TRIM(code) as code,TRIM(supplierNumber) as supplierNumber,TRIM(supplierName) as supplierName,leadTime,reviewTime,supplierReliability,supplierReliabilityType,stockedItem,MOQ,IOQ,EOQ,logisticUnit1,logisticUnit2,logisticUnit3,logisticUnit4,logisticUnit5,logisticUnit6,insuranceInventory,insuranceInventoryType,targetServiceLevel,TRIM(plcArticleCode) plcArticleCode,plcDate,plcPerc,abcClass,buyingPrice,MSQ,ISQ from [slim4interface_test].[dbo].[S4Import_Logistics]");
-            while (rs.next()) {
-                ImportLogistics i = new ImportLogistics();
-                i.setControlId(rs.getInt("controlId"));
-                i.setWarehousecode(rs.getString("warehouse"));
-                i.setCode(rs.getString("code"));
-                i.setSupplierNumber(rs.getString("supplierNumber"));
-                i.setSupplierName(rs.getString("supplierName"));
-                i.setLeadTime(rs.getBigDecimal("leadTime"));
-                i.setReviewTime(rs.getBigDecimal("reviewTime"));
-                i.setSupplierReliability(rs.getBigDecimal("supplierReliability"));
-                i.setSupplierReliabilityType(rs.getInt("supplierReliabilityType"));
-                i.setStockedItem(rs.getString("stockedItem"));
-                i.setMOQ(rs.getInt("MOQ"));
-                i.setIOQ(rs.getInt("IOQ"));
-                i.setEOQ(rs.getInt("EOQ"));
-                i.setLogisticUnit1(rs.getInt("logisticUnit1"));
-                i.setLogisticUnit2(rs.getInt("logisticUnit2"));
-                i.setLogisticUnit3(rs.getInt("logisticUnit3"));
-                i.setLogisticUnit4(rs.getInt("logisticUnit4"));
-                i.setLogisticUnit5(rs.getInt("logisticUnit5"));
-                i.setLogisticUnit6(rs.getInt("logisticUnit6"));
-                i.setInsuranceInventory(rs.getInt("insuranceInventory"));
-                i.setInsuranceInventoryType(rs.getInt("insuranceInventoryType"));
-                i.setTargetServiceLevel(rs.getBigDecimal("targetServiceLevel"));
-                i.setPlcArticleCode(rs.getString("plcArticleCode"));
-                i.setPlcDate(rs.getDate("plcDate"));
-                i.setPlcPerc(rs.getBigDecimal("plcPerc"));
-                i.setAbcClass(rs.getString("abcClass"));
-                i.setBuyingPrice(rs.getBigDecimal("buyingPrice"));
-                i.setMSQ(rs.getInt("MSQ"));
-                i.setISQ(rs.getInt("ISQ"));
-                logistics.add(i);
-            }
-        return logistics;    
-    }
 }
