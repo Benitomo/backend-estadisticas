@@ -31,6 +31,14 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "controlid,"
                     + "TRIM(warehouse) as warehouse,"
                     + "TRIM(articlecode) as articlecode,"
+                    + "stockonhand,"
+                    + "stockid,"
+                    + "stocktype,"
+                    + "excludesettings,"
+                    + "excludetilldate,"
+                    + "excludefromdate,"
+                    + "initialshelflife,"
+                    + "remainingshelflife"
                     + "ud1,"
                     + "ud2,"
                     + "ud3,"
@@ -40,10 +48,16 @@ public class StockDetailsServiceImp implements StockDetailsService {
             while (rs.next()) {
                 StockDetails t = new StockDetails();
                 t.setControlId(rs.getInt("controlid"));
-                
                 t.setWarehouse(rs.getString("warehouse"));
                 t.setCode(rs.getString("articlecode"));
-               
+                t.setStockOnHand(rs.getInt("stockonhand"));
+                t.setStockID(rs.getString("stockid"));
+                t.setStockType(rs.getString("stocktype"));
+                t.setExcludeSetting(rs.getInt("excludesettings"));
+                t.setExcludeTillDate(rs.getDate("excludetilldate"));
+                t.setExcludeFromDate(rs.getDate("excludefromdate"));
+                t.setInitialShelfLife(rs.getBigDecimal("initialshelflife"));
+                t.setRemainingShelfLife(rs.getBigDecimal("remainingshelflife"));
                 t.setuD1(rs.getString("ud1"));
                 t.setuD1(rs.getString("ud2"));
                 t.setuD1(rs.getString("ud3"));
@@ -113,10 +127,9 @@ public class StockDetailsServiceImp implements StockDetailsService {
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_StockDetails]"
                 + "("
                 + "controlId,"
-               
                 + "warehouse,"
                 + "code,"
-               
+                + ""
                 + "uD1,"
                 + "uD2,"
                 + "uD3,"
