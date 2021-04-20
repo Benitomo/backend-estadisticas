@@ -46,23 +46,23 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "from stockdetails";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                StockDetails t = new StockDetails();
-                t.setControlId(rs.getInt("controlid"));
-                t.setWarehouse(rs.getString("warehouse"));
-                t.setCode(rs.getString("articlecode"));
-                t.setStockOnHand(rs.getInt("stockonhand"));
-                t.setStockID(rs.getString("stockid"));
-                t.setStockType(rs.getString("stocktype"));
-                t.setExcludeSetting(rs.getInt("excludesettings"));
-                t.setExcludeTillDate(rs.getDate("excludetilldate"));
-                t.setExcludeFromDate(rs.getDate("excludefromdate"));
-                t.setInitialShelfLife(rs.getBigDecimal("initialshelflife"));
-                t.setRemainingShelfLife(rs.getBigDecimal("remainingshelflife"));
-                t.setuD1(rs.getString("ud1"));
-                t.setuD1(rs.getString("ud2"));
-                t.setuD1(rs.getString("ud3"));
-                t.setuD1(rs.getString("ud4"));
-                stock.add(t);
+                StockDetails s = new StockDetails();
+                s.setControlId(rs.getInt("controlid"));
+                s.setWarehouse(rs.getString("warehouse"));
+                s.setCode(rs.getString("articlecode"));
+                s.setStockOnHand(rs.getInt("stockonhand"));
+                s.setStockID(rs.getString("stockid"));
+                s.setStockType(rs.getString("stocktype"));
+                s.setExcludeSetting(rs.getInt("excludesettings"));
+                s.setExcludeTillDate(rs.getDate("excludetilldate"));
+                s.setExcludeFromDate(rs.getDate("excludefromdate"));
+                s.setInitialShelfLife(rs.getBigDecimal("initialshelflife"));
+                s.setRemainingShelfLife(rs.getBigDecimal("remainingshelflife"));
+                s.setuD1(rs.getString("ud1"));
+                s.setuD1(rs.getString("ud2"));
+                s.setuD1(rs.getString("ud3"));
+                s.setuD1(rs.getString("ud4"));
+                stock.add(s);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -129,7 +129,14 @@ public class StockDetailsServiceImp implements StockDetailsService {
                 + "controlId,"
                 + "warehouse,"
                 + "code,"
-                + ""
+                + "stockOnHand,"
+                + "stockID,"
+                + "stockType,"
+                + "excludeSetting,"
+                + "excludeTillDate,"
+                + "excludeFromDate,"
+                + "initialShelfLife,"
+                + "remainingShelfLife,"
                 + "uD1,"
                 + "uD2,"
                 + "uD3,"
@@ -140,10 +147,16 @@ public class StockDetailsServiceImp implements StockDetailsService {
             for (int i = 0; i < t.size(); i++) {
                 sql =  (i==t.size()-1)? 
                         sql + "(" + t.get(i).getControlId() + ", "
-                        
                         + "'" + t.get(i).getWarehouse()+ "', "
                         + "'" + t.get(i).getCode()+ "', "
-                        
+                        + "'" + t.get(i).getStockOnHand()+ "', "
+                        + "'" + t.get(i).getStockID()+ "', "
+                        + "'" + t.get(i).getStockType()+ "', "
+                        + "'" + t.get(i).getExcludeSetting()+ "', "
+                        + "'" + t.get(i).getExcludeTillDate()+ "', "
+                        + "'" + t.get(i).getExcludeFromDate()+ "', "
+                        + ""  + t.get(i).getInitialShelfLife()+ ", "
+                        + ""  + t.get(i).getRemainingShelfLife()+ ", "
                         + "'" + t.get(i).getuD1()+ "', "
                         + "'" + t.get(i).getuD2()+ "', "
                         + "'" + t.get(i).getuD3()+ "', "
@@ -163,14 +176,20 @@ public class StockDetailsServiceImp implements StockDetailsService {
                             + ")"
                 :
                         sql + "(" + t.get(i).getControlId() + ", "
-                        
                         + "'" + t.get(i).getWarehouse()+ "', "
                         + "'" + t.get(i).getCode()+ "', "
-                       
+                        + "'" + t.get(i).getStockOnHand()+ "', "
+                        + "'" + t.get(i).getStockID()+ "', "
+                        + "'" + t.get(i).getStockType()+ "', "
+                        + "'" + t.get(i).getExcludeSetting()+ "', "
+                        + "'" + t.get(i).getExcludeTillDate()+ "', "
+                        + "'" + t.get(i).getExcludeFromDate()+ "', "
+                        + ""  + t.get(i).getInitialShelfLife()+ ", "
+                        + ""  + t.get(i).getRemainingShelfLife()+ ", "
                         + "'" + t.get(i).getuD1()+ "', "
                         + "'" + t.get(i).getuD2()+ "', "
                         + "'" + t.get(i).getuD3()+ "', "
-                        + "'" + t.get(i).getuD4()+ "', ";
+                        + "'" + t.get(i).getuD4()+ "'), ";
                        
                         
             }
