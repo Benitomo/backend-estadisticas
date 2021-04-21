@@ -1,6 +1,7 @@
 
 package com.backend.slim4.controller ;
 
+import com.backend.slim4.service.ArticleCodeMasterService;
 import com.backend.slim4.service.ArticleFilterService;
 import com.backend.slim4.service.ConfirmedDemandService;
 import com.backend.slim4.service.ImportLogisticsService;
@@ -43,6 +44,9 @@ public class Controlador {
     @Autowired
     StockDetailsService stock_service;
     
+    @Autowired
+    ArticleCodeMasterService master_service;
+    
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
     public ResponseEntity articleFilter()throws IOException{
@@ -77,6 +81,12 @@ public class Controlador {
     @GetMapping(path = {"/stock-details"})
     public ResponseEntity importStockDetails()throws IOException{
         return stock_service.stockDetailsSelect();
+    } 
+    
+    // Traer articlecodemaster de Informix e insertar en SqlServer
+    @GetMapping(path = {"/article-code-master"})
+    public ResponseEntity importArticleCodeMaster()throws IOException{
+        return master_service.articleCodeMasterSelect();
     } 
     
     // Test
