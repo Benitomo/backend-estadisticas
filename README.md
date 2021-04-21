@@ -62,7 +62,7 @@ rm -f /btw/api-old/api-old.jar
 mv /btw/api-new.jar /btw/api-old/api-old.jar
 mv /btw/api-new/api-new.jar /btw/api-new.jar
 
-java -jar api-new.jar
+nohup java -jar /btw/api-new.jar &
 
 ```
 
