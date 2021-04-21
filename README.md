@@ -79,6 +79,6 @@ kill -9 [process id devuelto por el proceso anterior]
 rm -f /btw/api-new.jar
 mv /btw/api-old/api-old.jar /btw/api-new.jar
 
-java -jar /btw/api-new.jar
+nohup java -jar /btw/api-new.jar &
 
 ```
