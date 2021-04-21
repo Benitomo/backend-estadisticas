@@ -5,6 +5,7 @@ import com.backend.slim4.service.ArticleFilterService;
 import com.backend.slim4.service.ConfirmedDemandService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.backend.slim4.service.PurchaseOrderService;
+import com.backend.slim4.service.StockDetailsService;
 import com.backend.slim4.service.TransactionsService;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -39,6 +40,9 @@ public class Controlador {
     @Autowired
     TransactionsService transactions_service;
     
+    @Autowired
+    StockDetailsService stock_service;
+    
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
     public ResponseEntity articleFilter()throws IOException{
@@ -67,6 +71,12 @@ public class Controlador {
     @GetMapping(path = {"/transactions"})
     public ResponseEntity importTransactions()throws IOException{
         return transactions_service.transactionsSelect();
+    } 
+    
+    // Traer stockdetails de Informix e insertar en SqlServer
+    @GetMapping(path = {"/stock-details"})
+    public ResponseEntity importStockDetails()throws IOException{
+        return stock_service.stockDetailsSelect();
     } 
     
     // Test
