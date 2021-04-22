@@ -3,6 +3,7 @@ package com.backend.slim4.controller ;
 
 import com.backend.slim4.service.ArticleCodeMasterService;
 import com.backend.slim4.service.ArticleFilterService;
+import com.backend.slim4.service.BillOfMaterialService;
 import com.backend.slim4.service.ConfirmedDemandService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.backend.slim4.service.PurchaseOrderService;
@@ -47,6 +48,9 @@ public class Controlador {
     @Autowired
     ArticleCodeMasterService master_service;
     
+    @Autowired
+    BillOfMaterialService bill_service;
+    
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
     public ResponseEntity articleFilter()throws IOException{
@@ -87,6 +91,12 @@ public class Controlador {
     @GetMapping(path = {"/article-code-master"})
     public ResponseEntity importArticleCodeMaster()throws IOException{
         return master_service.articleCodeMasterSelect();
+    } 
+    
+    // Traer billofmaterial de Informix e insertar en SqlServer
+    @GetMapping(path = {"/bill-of-material"})
+    public ResponseEntity importBillOfMaterial()throws IOException{
+        return bill_service.billOfMaterialSelect();
     } 
     
     // Test
