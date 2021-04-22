@@ -6,7 +6,6 @@ import java.sql.Date;
 
 public class BillOfMaterial {
     int controlId;
-    String warehousecode;
     String code;
     String componentArticleCode;
     BigDecimal quantity;
@@ -26,13 +25,6 @@ public class BillOfMaterial {
         this.controlId = controlId;
     }
 
-    public String getWarehousecode() {
-        return warehousecode;
-    }
-
-    public void setWarehousecode(String warehousecode) {
-        this.warehousecode = warehousecode;
-    }
 
     public String getCode() {
         return code;
