@@ -8,6 +8,7 @@ import com.backend.slim4.service.ConfirmedDemandService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.backend.slim4.service.PurchaseOrderService;
 import com.backend.slim4.service.StockDetailsService;
+import com.backend.slim4.service.SuppliersService;
 import com.backend.slim4.service.TransactionsService;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -50,6 +51,9 @@ public class Controlador {
     
     @Autowired
     BillOfMaterialService bill_service;
+    
+    @Autowired
+    SuppliersService suppliers_service;
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
@@ -97,6 +101,12 @@ public class Controlador {
     @GetMapping(path = {"/bill-of-material"})
     public ResponseEntity importBillOfMaterial()throws IOException{
         return bill_service.billOfMaterialSelect();
+    } 
+    
+    // Traer suppliers de Informix e insertar en SqlServer
+    @GetMapping(path = {"/suppliers"})
+    public ResponseEntity importuppliers()throws IOException{
+        return suppliers_service.suppliersSelect();
     } 
     
     // Test

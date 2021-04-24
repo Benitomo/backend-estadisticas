@@ -26,7 +26,7 @@ public class ConfirmedDemandServiceImp implements ConfirmedDemandService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 70000 * from confirmeddemand";
+            String sql = "SELECT first 1000 * from confirmeddemand";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ConfirmedDemand po = new ConfirmedDemand();

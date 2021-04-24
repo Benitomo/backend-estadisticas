@@ -27,19 +27,20 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000"
+            String sql = "SELECT first 1000 "
                     + "controlid,"
                     + "TRIM(articlecode) as articlecode,"
-                    + "componentarticlecode,"
+                    + "TRIM(componentarticlecode) as componentarticlecode,"
                     + "quantity,"
                     + "bomid,"
-                    + "linenumber,"
+                    + "TRIM(linenumber) as linenumber,"
                     + "leadtime,"
                     + "fromdate,"
                     + "todate,"
                     + "bomtype,"
-                    + "exceptionlevel"
+                    + "exceptionlevel "
                     + "from billofmaterial";
+            System.out.print("Entre a traer la info de Informix" + "\n" + "Query: \n" + sql + "\n");
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 BillOfMaterial b = new BillOfMaterial();
@@ -58,7 +59,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
             }
             cnt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BillOfMaterialServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(bill.size()>0){
             try {
@@ -104,6 +105,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
     }
     
     public int emptyTable(Statement stmt){
+        System.out.print("Entre a eliminar la info de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_BillOfMaterial]";
         int result = 0;
         try {
@@ -119,7 +121,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_BillOfMaterial]"
                 + "("
                     + "controlId,"
-                    + "code,"
+                    + "articleCode,"
                     + "componentArticleCode,"
                     + "quantity,"
                     + "bomID,"
@@ -142,11 +144,12 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         + " " + b.get(i).getLeadTime()+ ","
                         + "'" + b.get(i).getFromDate()+ "',"
                         + "'" + b.get(i).getToDate()+ "',"
-                        + "'" + b.get(i).getBomType()+ "'"
+                        + "'" + b.get(i).getBomType()+ "',"
+                        + "'" + b.get(i).getExceptionLevel()+ "'"
                         + ")) as temporal"
                 + "("
                     + "controlId,"
-                    + "code,"
+                    + "articleCode,"
                     + "componentArticleCode,"
                     + "quantity,"
                     + "bomID,"
@@ -172,6 +175,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                        
                         
             }
+        System.out.print("Entre a insertar la info en Sql Server" + "\n" + "Query: \n" + sql + "\n");    
         return stmt.executeUpdate(sql);
     } 
 }
