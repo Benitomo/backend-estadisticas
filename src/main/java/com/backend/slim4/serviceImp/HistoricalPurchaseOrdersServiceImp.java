@@ -35,7 +35,7 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                     + "line,"
                     + "ordertypenumber,"
                     + "delivereddate,"
-                    + "deliveredquantity,"
+                    + "deliverdquantity,"
                     + "supplier,"
                     + "comments,"
                     + "freetext1,"
@@ -61,7 +61,7 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                 t.setNumber(rs.getString("ordernumber"));
                 t.setLine(rs.getInt("line"));
                 t.setOrderTypeNumber(rs.getInt("ordertypenumber"));
-                t.setDeliveredDate(rs.getDate("delivereddate"));
+                t.setDeliveredDate(rs.getDate("deliverddate"));
                 t.setSupplier(rs.getString("supplier"));
                 t.setComment(rs.getString("coments"));
                 t.setFreeText1(rs.getString("freetext1"));
