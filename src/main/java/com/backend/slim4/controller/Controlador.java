@@ -5,6 +5,7 @@ import com.backend.slim4.service.ArticleCodeMasterService;
 import com.backend.slim4.service.ArticleFilterService;
 import com.backend.slim4.service.BillOfMaterialService;
 import com.backend.slim4.service.ConfirmedDemandService;
+import com.backend.slim4.service.HistoricalPurchaseOrdersService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.backend.slim4.service.PurchaseOrderService;
 import com.backend.slim4.service.StockDetailsService;
@@ -54,6 +55,9 @@ public class Controlador {
     
     @Autowired
     SuppliersService suppliers_service;
+    
+    @Autowired
+    HistoricalPurchaseOrdersService historical_service;
     
     // Traer article_filter de Informix e insertar en SqlServer
     @GetMapping(path = {"/article-filter"})
@@ -105,8 +109,14 @@ public class Controlador {
     
     // Traer suppliers de Informix e insertar en SqlServer
     @GetMapping(path = {"/suppliers"})
-    public ResponseEntity importuppliers()throws IOException{
+    public ResponseEntity importSuppliers()throws IOException{
         return suppliers_service.suppliersSelect();
+    } 
+    
+    // Traer historicalpo de Informix e insertar en SqlServer
+    @GetMapping(path = {"/historical-po"})
+    public ResponseEntity importHistoricalPO()throws IOException{
+        return historical_service.historicalPurchaseOrdersSelect();
     } 
     
     // Test
