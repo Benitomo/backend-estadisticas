@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.Transactions;
 import com.backend.slim4.service.TransactionsService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,18 +20,30 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionsServiceImp implements TransactionsService {
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity transactionsSelect() {
-    String tituloResp  = "";
-    String mensajeResp = "";
-    ArrayList<Transactions> transaction = new ArrayList<>();
+    // Mensaje de respuesta
+        String tituloResp  = "";
+        String mensajeResp = "";
+         // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Transactions]"
+                + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
+            System.out.print("\n Entré a ejecutar query select en informix \n");
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(transactionnumber) as transactionnumber,"
-                    + "TRIM(transactiontype) as transactiontype ,"
+                    + "TRIM(transactiontype) as transactiontype,"
                     + "transactionname,"
                     + "transactionstatus,"
                     + "TRIM(warehouse) as warehouse,"
@@ -59,60 +72,87 @@ public class TransactionsServiceImp implements TransactionsService {
                     + "ud4,"
                     + "transactionissuetime "
                     + "from transactions";
+           try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+            // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                Transactions t = new Transactions();
-                t.setControlId(rs.getInt("controlid"));
-                t.setTransactionNumber(rs.getString("transactionnumber"));
-                t.setTransactionType(rs.getString("transactiontype"));
-                t.setTransactionName(rs.getString("transactionname"));
-                t.setTransactionName(rs.getString("transactionstatus"));
-                t.setWarehouse(rs.getString("warehouse"));
-                t.setCode(rs.getString("articlecode"));
-                t.setIssueDate(rs.getDate("issuedate"));
-                t.setConfirmedDate(rs.getDate("confirmeddate"));
-                t.setRequestedDate(rs.getDate("requesteddate"));
-                t.setIssueQuantity(rs.getBigDecimal("issuequantity"));
-                t.setLineNumber(rs.getString("linenumber"));
-                t.setConfirmedQuantity(rs.getBigDecimal("confirmedquantity"));
-                t.setRequestedQuantity(rs.getBigDecimal("requestedquantity"));
-                t.setCustomerNumber(rs.getString("customernumber"));
-                t.setCustomerType(rs.getString("customertype"));
-                t.setCustomerName(rs.getString("customername"));
-                t.setSalesPrice(rs.getBigDecimal("salesprice"));
-                t.setDeliveryLocation(rs.getString("deliverylocation"));
-                t.setSupplierNumber(rs.getString("suppliernumber"));
-                t.setSupplierType(rs.getString("suppliertype"));
-                t.setSupplierName(rs.getString("suppliername"));
-                t.setBuyingPrice(rs.getBigDecimal("buyingprice"));
-                t.setSupplyingLocation(rs.getString("supplyinglocation"));
-                t.setConversionFactor(rs.getBigDecimal("conversionfactor"));
-                t.setuD1(rs.getString("ud1"));
-                t.setuD1(rs.getString("ud2"));
-                t.setuD1(rs.getString("ud3"));
-                t.setuD1(rs.getString("ud4"));
-                t.setTransactionIssueTime(rs.getString("transactionissuetime"));
-                transaction.add(t);
+            int counter = 0;
+            int r = emptyTable(stmt2);
+            System.out.print("\n Registros eliminados en Sql Server: " + r + "\n");
+            if(r>=0){
+                System.out.print("\n Entré a insertar la info " + "\n");
+                while (rs.next()) {
+                pstmt.setInt(1, rs.getInt("controlid"));
+                pstmt.setString(2, rs.getString("transactionnumber"));
+                pstmt.setString(3, rs.getString("transactiontype"));
+                pstmt.setString(4, rs.getString("transactionname"));
+                pstmt.setString(5, rs.getString("transactionstatus"));
+                pstmt.setString(6, rs.getString("warehouse"));
+                pstmt.setString(7, rs.getString("articlecode"));
+                pstmt.setDate(8, rs.getDate("issuedate"));
+                pstmt.setDate(9, rs.getDate("confirmeddate"));
+                pstmt.setDate(10, rs.getDate("requesteddate"));
+                pstmt.setBigDecimal(11, rs.getBigDecimal("issuequantity"));
+                pstmt.setString(12, rs.getString("linenumber"));
+                pstmt.setBigDecimal(13, rs.getBigDecimal("confirmedquantity"));
+                pstmt.setBigDecimal(14, rs.getBigDecimal("requestedquantity"));
+                pstmt.setString(15, rs.getString("customernumber"));
+                pstmt.setString(16, rs.getString("customertype"));
+                pstmt.setString(17, rs.getString("customername"));
+                pstmt.setBigDecimal(18, rs.getBigDecimal("salesprice"));
+                pstmt.setString(19, rs.getString("deliverylocation"));
+                pstmt.setString(20, rs.getString("suppliernumber"));
+                pstmt.setString(21, rs.getString("suppliertype"));
+                pstmt.setString(22, rs.getString("suppliername"));
+                pstmt.setBigDecimal(23, rs.getBigDecimal("buyingprice"));
+                pstmt.setString(24, rs.getString("supplyinglocation"));
+                pstmt.setBigDecimal(25, rs.getBigDecimal("conversionfactor"));
+                pstmt.setString(26, rs.getString("ud1"));
+                pstmt.setString(27, rs.getString("ud2"));
+                pstmt.setString(28, rs.getString("ud3"));
+                pstmt.setString(29, rs.getString("ud4"));
+                pstmt.setString(30, rs.getString("transactionissuetime"));
+                pstmt.addBatch();
+                        counter++;
+                        if (counter == REGISTROS_BATCH) {
+                        pstmt.executeBatch();
+                        counter = 0;
+                        }
+
+                        }
+                        //revisamos si todavía hay sentencias pendientes de ejecutar
+                        if (counter > 0) {
+                            pstmt.executeBatch();
+                        }
+                        System.out.print("\n Proceso finalizado! \n");
+                        tituloResp = "Éxito";
+                        mensajeResp = "se ejecutó la interface Transactions correctamente!";
+                        }else{
+                            tituloResp = "Error";
+                            mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                        }
             }
             cnt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(transaction.size()>0){
-            try {
-                return transactionsInsert(transaction);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla transactions está vacía o hay inconvenientes de columnas";
+            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
+        }
+    
+    public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
     
     
@@ -142,16 +182,7 @@ public class TransactionsServiceImp implements TransactionsService {
         
     }
     
-    public int emptyTable(Statement stmt){
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    } 
+     
     public int insertDataTable(Statement stmt, ArrayList<Transactions> t) throws SQLException{
         
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Transactions]"

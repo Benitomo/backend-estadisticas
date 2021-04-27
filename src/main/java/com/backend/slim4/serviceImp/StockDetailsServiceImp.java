@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.StockDetails;
 import com.backend.slim4.service.StockDetailsService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,14 +20,42 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StockDetailsServiceImp implements StockDetailsService {
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity stockDetailsSelect() {
-    String tituloResp  = "";
-    String mensajeResp = "";
-    ArrayList<StockDetails> stock = new ArrayList<>();
+    // Mensaje de respuesta
+        String tituloResp  = "";
+        String mensajeResp = "";
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_StockDetails]"
+                + "("
+                + "controlId,"
+                + "warehouse,"
+                + "code,"
+                + "stockOnHand,"
+                + "stockID,"
+                + "stockType,"
+                + "excludeSetting,"
+                + "excludeTillDate,"
+                + "excludeFromDate,"
+                + "initialShelfLife,"
+                + "remainingShelfLife,"
+                + "uD1,"
+                + "uD2,"
+                + "uD3,"
+                + "uD4"
+                + ") "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+              // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(warehousecode) as warehousecode,"
@@ -44,42 +73,60 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "ud3,"
                     + "ud4 "
                     + "from stockdetails";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                StockDetails s = new StockDetails();
-                s.setControlId(rs.getInt("controlid"));
-                s.setWarehouse(rs.getString("warehousecode"));
-                s.setCode(rs.getString("articlecode"));
-                s.setStockOnHand(rs.getInt("stockonhand"));
-                s.setStockID(rs.getString("stockid"));
-                s.setStockType(rs.getString("stocktype"));
-                s.setExcludeSetting(rs.getInt("excludesetting"));
-                s.setExcludeTillDate(rs.getDate("excludetilldate"));
-                s.setExcludeFromDate(rs.getDate("excludefromdate"));
-                s.setInitialShelfLife(rs.getBigDecimal("initialshelflife"));
-                s.setRemainingShelfLife(rs.getBigDecimal("remainingshelflife"));
-                s.setuD1(rs.getString("ud1"));
-                s.setuD1(rs.getString("ud2"));
-                s.setuD1(rs.getString("ud3"));
-                s.setuD1(rs.getString("ud4"));
-                stock.add(s);
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+               // Ejecutamos el query que trae la información de Informix    
+               ResultSet rs = stmt.executeQuery(sql);
+               // Contador que nos permite saber cuando llegamos al límite de inserción
+               int counter = 0;
+               int r = emptyTable(stmt2);
+               if(r>=0){
+                    System.out.print("\n Entré al while next \n");
+                while (rs.next()) {
+                        pstmt.setInt(1, rs.getInt("controlid"));
+                        pstmt.setString(2, rs.getString("warehousecode"));
+                        pstmt.setString(3, rs.getString("articlecode"));
+                        pstmt.setInt(4, rs.getInt("stockonhand"));
+                        pstmt.setString(5, rs.getString("stockid"));
+                        pstmt.setString(6, rs.getString("stocktype"));
+                        pstmt.setInt(7, rs.getInt("excludesetting"));
+                        pstmt.setDate(8, rs.getDate("excludetilldate"));
+                        pstmt.setDate(9, rs.getDate("excludefromdate"));
+                        pstmt.setBigDecimal(10, rs.getBigDecimal("initialshelflife"));
+                        pstmt.setBigDecimal(11, rs.getBigDecimal("remainingshelflife"));
+                        pstmt.setString(12, rs.getString("ud1"));
+                        pstmt.setString(13, rs.getString("ud2"));
+                        pstmt.setString(14, rs.getString("ud3"));
+                        pstmt.setString(15, rs.getString("ud4"));
+                        
+                        pstmt.addBatch();
+                        counter++;
+                        if (counter == REGISTROS_BATCH) {
+                        pstmt.executeBatch();
+                        counter = 0;
+                        }
+
+                        }
+                        //revisamos si todavía hay sentencias pendientes de ejecutar
+                        if (counter > 0) {
+                            pstmt.executeBatch();
+                        }
+                        System.out.print("\n Proceso finalizado! \n");
+                        tituloResp = "Éxito";
+                        mensajeResp = "se ejecutó la interface StockDetails correctamente!";
+                        }else{
+                            tituloResp = "Error";
+                            mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                        }
+               
             }
             cnt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(stock.size()>0){
-            try {
-                return stockDetailsInsert(stock);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla stockdetails está vacía o hay inconvenientes de columnas";
-        }
-        
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);

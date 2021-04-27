@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.PurchaseOrder;
 import com.backend.slim4.service.PurchaseOrderService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,61 +20,103 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PurchaseOrderServiceImp implements PurchaseOrderService{
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity purchaseOrderSelect() {
+       // Mensaje de respuesta
         String tituloResp  = "";
         String mensajeResp = "";
-    ArrayList<PurchaseOrder> purchase = new ArrayList<>();
+        
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_PurchaseOrder]"
+                + "(controlId,warehouse,code,number,deliveryDate,openQuantity,supplier,comment,originalQuantity,suppliedQuantity,freeText1,freeText2,freeNumber1,freeNumber2,type,line,excludeSetting, excludeDate, excludeFromAM, supplierNumber, supplierName)"
+                + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+           // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT * from purchaseorder";
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+            // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                PurchaseOrder po = new PurchaseOrder();
-                po.setControlId(rs.getInt("controlid"));
-                po.setWarehousecode(rs.getString("warehousecode"));
-                po.setCode(rs.getString("articlecode"));
-                po.setNumber(rs.getString("numbers"));
-                po.setDeliveryDate(rs.getDate("deliverydate"));
-                po.setOpenQuantity(rs.getInt("openquantity"));
-                po.setSupplier(rs.getString("supplier"));
-                po.setComment(rs.getString("comments"));
-                po.setOriginalQuantity(rs.getInt("originalquantity"));
-                po.setSuppliedQuantity(rs.getInt("suppliedquantity"));
-                po.setFreeText1(rs.getString("freetext1"));
-                po.setFreeText2(rs.getString("freetext2"));
-                po.setFreeNumber1(rs.getBigDecimal("freenumber1"));
-                po.setFreeNumber2(rs.getBigDecimal("freenumber2"));
-                po.setOrderTypeNumber(rs.getInt("ordertypenumber"));
-                po.setLine(rs.getInt("line"));
-                po.setExcludeSetting(rs.getInt("excludesetting"));
-                po.setExcludeDate(rs.getDate("excludedate"));
-                po.setExcludeFromAM(rs.getInt("excludefromam"));
-                po.setSupplierNumber(rs.getString("suppliernumber"));
-                po.setSupplierName(rs.getString("suppliername"));
-                purchase.add(po);
+            int counter = 0;
+            int r = emptyTable(stmt2);
+            System.out.print("\n Resultado del Delete: " + r + "\n");
+            
+            if(r>=0){
+                while (rs.next()) {
+                    
+                    pstmt.setInt(1, rs.getInt("controlid"));
+                    pstmt.setString(2, rs.getString("warehousecode"));
+                    pstmt.setString(3, rs.getString("articlecode"));
+                    pstmt.setString(4, rs.getString("numbers"));
+                    pstmt.setDate(5, rs.getDate("deliverydate"));
+                    pstmt.setInt(6, rs.getInt("openquantity"));
+                    pstmt.setString(7, rs.getString("supplier"));
+                    pstmt.setString(8, rs.getString("comments"));
+                    pstmt.setInt(9, rs.getInt("originalquantity"));
+                    pstmt.setInt(10, rs.getInt("suppliedquantity"));
+                    pstmt.setString(11, rs.getString("freetext1"));
+                    pstmt.setString(12, rs.getString("freetext2"));
+                    pstmt.setBigDecimal(13, rs.getBigDecimal("freenumber1"));
+                    pstmt.setBigDecimal(14, rs.getBigDecimal("freenumber2"));
+                    pstmt.setInt(15, rs.getInt("ordertypenumber"));
+                    pstmt.setInt(16, rs.getInt("line"));
+                    pstmt.setInt(17, rs.getInt("excludesetting"));
+                    pstmt.setDate(18, rs.getDate("excludedate"));
+                    pstmt.setInt(19, rs.getInt("excludefromam"));
+                    pstmt.setString(20, rs.getString("suppliernumber"));
+                    pstmt.setString(21, rs.getString("suppliername"));
+
+                    pstmt.addBatch();
+                    counter++;
+                    if (counter == REGISTROS_BATCH) {
+                        pstmt.executeBatch();
+                    }
+                }
+                //revisamos si todavía hay sentencias pendientes de ejecutar
+                if (counter > 0) {
+                    pstmt.executeBatch();
+                }
+                System.out.print("\n Proceso finalizado! \n");
+                tituloResp = "Éxito";
+                mensajeResp = "se ejecutó la interface PurchaseOrder correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                }
             }
             cnt.close();
+            
         } catch (SQLException ex) {
             Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(purchase.size()>0){
-            try {
-                return purchaseOrderInsert(purchase);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla purchaseOrder está vacía o hay inconvenientes de columnas";
-        }
+        
         
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
+    
+    public int emptyTable(Statement stmt){
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_PurchaseOrder]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    } 
     
     public ResponseEntity purchaseOrderInsert(ArrayList<PurchaseOrder> p) throws ClassNotFoundException {
         String tituloResp = "";
@@ -101,16 +144,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         
     }
     
-    public int emptyTable(Statement stmt){
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_PurchaseOrder]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    } 
+    
     
     public int insertDataTable(Statement stmt, ArrayList<PurchaseOrder> il) throws SQLException{
         
