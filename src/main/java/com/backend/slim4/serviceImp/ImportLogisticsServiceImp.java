@@ -134,7 +134,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                 }
                 System.out.print("\n Proceso finalizado! \n");
                 tituloResp = "Éxito";
-                mensajeResp = "se ejecutó la interface ArticleFilter correctamente!";
+                mensajeResp = "se ejecutó la interface Logistics correctamente!";
                 }else{
                     tituloResp = "Error";
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";

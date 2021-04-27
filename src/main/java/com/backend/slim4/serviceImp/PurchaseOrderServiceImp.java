@@ -31,7 +31,29 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         
         // Prepare Stament para inserción en Sql Server, se insertará por bloques.
         String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_PurchaseOrder]"
-                + "(controlId,warehouse,code,number,deliveryDate,openQuantity,supplier,comment,originalQuantity,suppliedQuantity,freeText1,freeText2,freeNumber1,freeNumber2,type,line,excludeSetting, excludeDate, excludeFromAM, supplierNumber, supplierName)"
+                + "("
+                + "controlId,"
+                + "warehouse,"
+                + "code,"
+                + "number,"
+                + "deliveryDate,"
+                + "openQuantity,"
+                + "supplier,"
+                + "comment,"
+                + "originalQuantity,"
+                + "suppliedQuantity,"
+                + "freeText1,"
+                + "freeText2,"
+                + "freeNumber1,"
+                + "freeNumber2,"
+                + "type,"
+                + "line,"
+                + "excludeSetting, "
+                + "excludeDate, "
+                + "excludeFromAM, "
+                + "supplierNumber, "
+                + "supplierName"
+                + ")"
                 + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
            // Informix
@@ -51,6 +73,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
             System.out.print("\n Resultado del Delete: " + r + "\n");
             
             if(r>=0){
+                System.out.print("\n Entré al while next \n");
                 while (rs.next()) {
                     
                     pstmt.setInt(1, rs.getInt("controlid"));
@@ -79,19 +102,21 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     counter++;
                     if (counter == REGISTROS_BATCH) {
                         pstmt.executeBatch();
+                        counter = 0;
                     }
-                }
-                //revisamos si todavía hay sentencias pendientes de ejecutar
-                if (counter > 0) {
-                    pstmt.executeBatch();
-                }
-                System.out.print("\n Proceso finalizado! \n");
-                tituloResp = "Éxito";
-                mensajeResp = "se ejecutó la interface PurchaseOrder correctamente!";
-                }else{
-                    tituloResp = "Error";
-                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
-                }
+
+                    }
+                    //revisamos si todavía hay sentencias pendientes de ejecutar
+                    if (counter > 0) {
+                        pstmt.executeBatch();
+                    }
+                    System.out.print("\n Proceso finalizado! \n");
+                    tituloResp = "Éxito";
+                    mensajeResp = "se ejecutó la interface Logistics correctamente!";
+                    }else{
+                        tituloResp = "Error";
+                        mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                    }
             }
             cnt.close();
             
@@ -100,14 +125,13 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
     
     public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_PurchaseOrder]";
         int result = 0;
         try {

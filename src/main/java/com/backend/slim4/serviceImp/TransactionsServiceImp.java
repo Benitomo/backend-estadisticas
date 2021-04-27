@@ -133,9 +133,9 @@ public class TransactionsServiceImp implements TransactionsService {
             }
             cnt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();
