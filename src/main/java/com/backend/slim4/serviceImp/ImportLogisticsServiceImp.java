@@ -30,68 +30,143 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ImportLogisticsServiceImp implements ImportLogisticsService {
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity importLogisticsSelect() {
-    ArrayList<ImportLogistics> logistics = new ArrayList<>();
+        // Mensaje de respuesta
+        String tituloResp  = "";
+        String mensajeResp = "";
+        
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Logistics]"
+                + "(controlId,"
+                + "warehouse,"
+                + "code,"
+                + "supplierNumber,"
+                + "supplierName,"
+                + "leadTime,"
+                + "reviewTime,"
+                + "supplierReliability,"
+                + "supplierReliabilityType,"
+                + "stockedItem,"
+                + "MOQ,"
+                + "IOQ,"
+                + "EOQ,"
+                + "logisticUnit1,"
+                + "logisticUnit2,"
+                + "logisticUnit3,"
+                + "logisticUnit4,"
+                + "logisticUnit5,"
+                + "logisticUnit6,"
+                + "insuranceInventory,"
+                + "insuranceInventoryType,"
+                + "targetServiceLevel,"
+                + "plcArticleCode,"
+                + "plcDate,"
+                + "plcPerc,"
+                + "abcClass,"
+                + "buyingPrice,"
+                + "MSQ,"
+                + "ISQ) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT * from logistics";
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+            // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                ImportLogistics i = new ImportLogistics();
-                i.setControlId(rs.getInt("controlid"));
-                i.setWarehousecode(rs.getString("warehousecode"));
-                i.setCode(rs.getString("articlecode"));
-                i.setSupplierNumber(rs.getString("suppliernumber"));
-                i.setSupplierName(rs.getString("suppliername"));
-                i.setLeadTime(rs.getBigDecimal("leadtime"));
-                i.setReviewTime(rs.getBigDecimal("reviewtime"));
-                i.setSupplierReliability(rs.getBigDecimal("supplierreliability"));
-                i.setSupplierReliabilityType(rs.getInt("supplierreliabilitytype"));
-                i.setStockedItem(rs.getString("stockeditem"));
-                i.setMOQ(rs.getInt("moq"));
-                i.setIOQ(rs.getInt("ioq"));
-                i.setEOQ(rs.getInt("eoq"));
-                i.setLogisticUnit1(rs.getInt("logisticunit1"));
-                i.setLogisticUnit2(rs.getInt("logisticunit2"));
-                i.setLogisticUnit3(rs.getInt("logisticunit3"));
-                i.setLogisticUnit4(rs.getInt("logisticunit4"));
-                i.setLogisticUnit5(rs.getInt("logisticunit5"));
-                i.setLogisticUnit6(rs.getInt("logisticunit6"));
-                i.setInsuranceInventory(rs.getInt("insuranceinventory"));
-                i.setInsuranceInventoryType(rs.getInt("insuranceinventorytype"));
-                i.setTargetServiceLevel(rs.getBigDecimal("targetservicelevel"));
-                i.setPlcArticleCode(rs.getString("plcarticlecode"));
-                i.setPlcDate(rs.getDate("plcdate"));
-                i.setPlcPerc(rs.getBigDecimal("plcperc"));
-                i.setAbcClass(rs.getString("abcclass"));
-                i.setBuyingPrice(rs.getBigDecimal("buyingprice"));
-                i.setMSQ(rs.getInt("msq"));
-                i.setISQ(rs.getInt("isq"));
-                logistics.add(i);
+            int counter = 0;
+            int r = emptyTable(stmt2);
+            System.out.print("\n Resultado del Delete: " + r + "\n");
+            if(r>=0){
+                while (rs.next()) {
+                
+                pstmt.setInt(1, rs.getInt("controlid"));
+                pstmt.setString(2, rs.getString("warehousecode"));
+                pstmt.setString(3, rs.getString("articlecode"));
+                pstmt.setString(4, rs.getString("suppliernumber"));
+                pstmt.setString(5, rs.getString("suppliername"));
+                pstmt.setBigDecimal(6, rs.getBigDecimal("leadtime"));
+                pstmt.setBigDecimal(7, rs.getBigDecimal("reviewtime"));
+                pstmt.setBigDecimal(8, rs.getBigDecimal("supplierreliability"));
+                pstmt.setInt(9, rs.getInt("supplierreliabilitytype"));
+                pstmt.setString(10, rs.getString("stockeditem"));
+                pstmt.setInt(11, rs.getInt("moq"));
+                pstmt.setInt(12, rs.getInt("ioq"));
+                pstmt.setInt(13, rs.getInt("eoq"));
+                pstmt.setInt(14, rs.getInt("logisticunit1"));
+                pstmt.setInt(15, rs.getInt("logisticunit2"));
+                pstmt.setInt(16, rs.getInt("logisticunit3"));
+                pstmt.setInt(17, rs.getInt("logisticunit4"));
+                pstmt.setInt(18, rs.getInt("logisticunit5"));
+                pstmt.setInt(19, rs.getInt("logisticunit6"));
+                pstmt.setInt(20, rs.getInt("insuranceinventory"));
+                pstmt.setInt(21, rs.getInt("insuranceinventorytype"));
+                pstmt.setBigDecimal(22, rs.getBigDecimal("targetservicelevel"));
+                pstmt.setString(23, rs.getString("plcarticlecode"));
+                pstmt.setDate(24, rs.getDate("plcdate"));
+                pstmt.setBigDecimal(25, rs.getBigDecimal("plcperc"));
+                pstmt.setString(26, rs.getString("abcclass"));
+                pstmt.setBigDecimal(27, rs.getBigDecimal("buyingprice"));
+                pstmt.setInt(28, rs.getInt("msq"));
+                pstmt.setInt(29, rs.getInt("isq"));
+                
+                pstmt.addBatch();
+                counter++;
+                if (counter == REGISTROS_BATCH) {
+                    pstmt.executeBatch();
+                    counter = 0;
+                }
+                
+                }
+                //revisamos si todavía hay sentencias pendientes de ejecutar
+                if (counter > 0) {
+                    pstmt.executeBatch();
+                }
+                System.out.print("\n Proceso finalizado! \n");
+                tituloResp = "Éxito";
+                mensajeResp = "se ejecutó la interface ArticleFilter correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                }
             }
+             
             cnt.close();
+            
+            
+            
         } catch (SQLException ex) {
             Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(logistics.size()>0){
-            try {
-                return importLogisticsInsert(logistics);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("Datos no encontrados", "la tabla logistics está vacía");
-            return new ResponseEntity(map, HttpStatus.OK);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();
-        map.put("Error", "No se pudo traer información de la base de datos Informix");
+        map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
+    
+    public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Logistics]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    } 
     
     public ResponseEntity importLogisticsInsert(ArrayList<ImportLogistics> a) throws ClassNotFoundException {
         String tituloResp = "";
@@ -119,16 +194,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         
     }
     
-    public int emptyTable(Statement stmt){
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Logistics]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    } 
+    
     
     public int insertDataTable(Statement stmt, ArrayList<ImportLogistics> il) throws SQLException{
         

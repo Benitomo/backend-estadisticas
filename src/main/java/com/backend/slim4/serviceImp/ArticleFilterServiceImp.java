@@ -2,7 +2,6 @@ package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.model.ArticleFilter;
 import com.backend.slim4.service.ArticleFilterService;
-import com.google.gson.Gson;
 import com.backend.slim4.GetConnection;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,9 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ArticleFilterServiceImp implements ArticleFilterService{
     
+    // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity articleFilterSelect() {
@@ -44,17 +42,17 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
             Connection cnt2 = GetConnection.sqlServer();
             Statement stmt2 = cnt2.createStatement();
             // Query que trae la información de Informix
-            String sql = "SELECT first 183517 controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
+            String sql = "SELECT controlid, TRIM(warehousecode) as warehousecode, TRIM(articlecode) as articlecode from articlefilter";
             
             System.out.print("\n Entré a ejecutar query select en informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
             // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
-            //String sql2 = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_ArticleFilter](controlId, warehouse, code) SELECT * FROM  (VALUES";
-            
             // Contador que nos permite saber cuando llegamos al límite de inserción
             int counter = 0;
+            int r = emptyTable(stmt2);
+            if(r>=0){
             while (rs.next()) {
                 
                 ArticleFilter article = new ArticleFilter();
@@ -73,21 +71,21 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
                     pstmt.executeBatch();
                     counter = 0;
                 }
-                //sql2 = sql2.substring(0, sql2.length()-1);
-                //sql2 += ") as temporal(controlId,warehouse,code)";
-                //escritura(sql2);
-                //int r = emptyTable(stmt2);
-                //insertData(stmt2,sql2);
             }
             
-            //revisamos si todavía hay sentencias pendientes de ejecutar
-            if (counter > 0) {
-                pstmt.executeBatch();
+                //revisamos si todavía hay sentencias pendientes de ejecutar
+                if (counter > 0) {
+                    pstmt.executeBatch();
+                }
+                System.out.print("\n Proceso finalizado! \n");
+                tituloResp = "Éxito";
+                mensajeResp = "se ejecutó la interface ArticleFilter correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                }
             }
-            tituloResp = "Éxito";
-            mensajeResp = "se ejecutó la interface ArticleFilter correctamente!";
-                //sql2 +=  "(" + rs.getInt("controlid") + ", " + getStringOrNull(rs.getString("warehousecode")) + ", " + getStringOrNull(rs.getString("articlecode")) + "),";
-            }
+            
            
             cnt.close();
         } catch (SQLException ex) {
@@ -100,6 +98,18 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
         
+    }
+    
+    public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_ArticleFilter]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
     
     public String getStringOrNull(String palabra){
@@ -135,7 +145,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         
     }
      
-      public void escritura (String sql){
+    public void escritura (String sql){
           System.out.print("\n Entré a guardar el sql en el archivo txt \n");
         try {
             String ruta = "C:/Users/USUARIO/Desktop/sql.txt";
@@ -153,17 +163,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
         }
     }
      
-    public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_ArticleFilter]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(ArticleFilterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    } 
+     
     
     public void insertData(Statement stmt, String sqlInsert){
         try {
