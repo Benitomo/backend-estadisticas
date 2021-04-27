@@ -27,7 +27,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000"
+            String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(warehousecode) as warehousecode,"
                     + "TRIM(articlecode) as articlecode,"

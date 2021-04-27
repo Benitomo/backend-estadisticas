@@ -27,7 +27,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000 * from purchaseorder";
+            String sql = "SELECT * from purchaseorder";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 PurchaseOrder po = new PurchaseOrder();

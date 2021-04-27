@@ -27,7 +27,7 @@ public class TransactionsServiceImp implements TransactionsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000"
+            String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(transactionnumber) as transactionnumber,"
                     + "TRIM(transactiontype) as transactiontype ,"

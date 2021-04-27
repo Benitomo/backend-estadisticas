@@ -36,7 +36,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000 * from logistics";
+            String sql = "SELECT * from logistics";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ImportLogistics i = new ImportLogistics();

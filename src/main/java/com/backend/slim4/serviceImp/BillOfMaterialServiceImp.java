@@ -27,7 +27,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
         try {
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
-            String sql = "SELECT first 1000 "
+            String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(articlecode) as articlecode,"
                     + "TRIM(componentarticlecode) as componentarticlecode,"
