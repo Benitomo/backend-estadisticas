@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.Suppliers;
 import com.backend.slim4.service.SuppliersService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,14 +20,61 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SuppliersServiceImp implements SuppliersService{
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
+    
     @Override
     public ResponseEntity suppliersSelect() {
-    String tituloResp  = "";
-    String mensajeResp = "";
-    ArrayList<Suppliers> suppliers = new ArrayList<>();
+        // Mensaje de respuesta
+        String tituloResp  = "";
+        String mensajeResp = "";
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_Suppliers]"
+                + "("
+                + "controlId,"
+                + "warehouse,"
+                + "code,"
+                + "supplierNumber, "
+                + "supplierName,"
+                + "primarySupplier,"
+                + "preference,"
+                + "leadTime,"
+                + "reviewTime,"
+                + "buyingPrice,"
+                + "currencyCode,"
+                + "minimumOrderQuantity,"
+                + "incrementalOrderQuantity,"
+                + "economicOrderQuantity,"
+                + "supplierReliability,"
+                + "supplierReliabilitySetting,"
+                + "supplierArticleCode,"
+                + "availableInventory,"
+                + "desiredSplit,"
+                + "suppliedQuantity,"
+                + "orderFromDate,"
+                + "orderToDate,"
+                + "logisticUnit1,"
+                + "logisticUnit2,"
+                + "logisticUnit3,"
+                + "logisticUnit4,"
+                + "logisticUnit5,"
+                + "logisticUnit6,"
+                + "uD1,"
+                + "uD2,"
+                + "uD3,"
+                + "uD4,"
+                + "uD5"
+                + ") "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(warehousecode) as warehousecode,"
@@ -62,64 +110,96 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "ud4,"
                     + "ud5 "
                     + "from suppliers";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                Suppliers t = new Suppliers();
-                t.setControlId(rs.getInt("controlid"));
-                t.setWarehouse(rs.getString("warehousecode"));
-                t.setCode(rs.getString("articlecode"));
-                t.setSupplierNumber(rs.getString("suppliernumber"));
-                t.setSupplierName(rs.getString("suppliername"));
-                t.setPrimarySupplier(rs.getInt("primarysupplier"));
-                t.setPreference(rs.getInt("preference"));
-                t.setLeadTime(rs.getBigDecimal("leadtime"));
-                t.setReviewTime(rs.getBigDecimal("reviewtime"));
-                t.setBuyingPrice(rs.getBigDecimal("buyingprice"));
-                t.setCurrencyCode(rs.getString("currencycode"));
-                t.setMOQ(rs.getInt("moq"));
-                t.setIOQ(rs.getInt("ioq"));
-                t.setEOQ(rs.getInt("eoq"));
-                t.setSupplierReliability(rs.getBigDecimal("supplierreliability"));
-                t.setSupplierRealibilityType(rs.getInt("supplierreliabilitytype"));
-                t.setSupplierArticleCode(rs.getString("supplierarticlecode"));
-                t.setAvailableInventory(rs.getInt("availableinventory"));
-                t.setDesiredSplit(rs.getBigDecimal("desiredsplit"));
-                t.setSuppliedQuantity(rs.getInt("suppliedquantity"));
-                t.setOrderFromDate(rs.getDate("orderfromdate"));
-                t.setOrderFromDate(rs.getDate("ordertodate"));
-                t.setLogisticUnit1(rs.getInt("logisticUnit1"));
-                t.setLogisticUnit2(rs.getInt("logisticUnit2"));
-                t.setLogisticUnit3(rs.getInt("logisticUnit3"));
-                t.setLogisticUnit4(rs.getInt("logisticUnit4"));
-                t.setLogisticUnit5(rs.getInt("logisticUnit5"));
-                t.setLogisticUnit6(rs.getInt("logisticUnit6"));
-                t.setuD1(rs.getString("ud1"));
-                t.setuD2(rs.getString("ud2"));
-                t.setuD3(rs.getString("ud3"));
-                t.setuD4(rs.getString("ud4"));
-                t.setuD5(rs.getString("ud5"));
-                suppliers.add(t);
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+               // Ejecutamos el query que trae la información de Informix    
+               ResultSet rs = stmt.executeQuery(sql);
+               // Contador que nos permite saber cuando llegamos al límite de inserción
+               int counter = 0;
+               int r = emptyTable(stmt2);
+               System.out.print("\n Resultado del Delete: " + r + "\n");
+               if(r>=0){
+                   System.out.print("\n Entré al while next \n");
+                   while (rs.next()) {
+                        pstmt.setInt(1, rs.getInt("controlid"));
+                        pstmt.setString(2, rs.getString("warehousecode"));
+                        pstmt.setString(3, rs.getString("articlecode"));
+                        pstmt.setString(4, rs.getString("suppliernumber"));
+                        pstmt.setString(5, rs.getString("suppliername"));
+                        pstmt.setInt(6, rs.getInt("primarysupplier"));
+                        pstmt.setInt(7, rs.getInt("preference"));
+                        pstmt.setBigDecimal(8, rs.getBigDecimal("leadtime"));
+                        pstmt.setBigDecimal(9, rs.getBigDecimal("reviewtime"));
+                        pstmt.setBigDecimal(10, rs.getBigDecimal("buyingprice"));
+                        pstmt.setString(11, rs.getString("currencycode"));
+                        pstmt.setInt(12, rs.getInt("moq"));
+                        pstmt.setInt(13, rs.getInt("ioq"));
+                        pstmt.setInt(14, rs.getInt("eoq"));
+                        pstmt.setBigDecimal(15, rs.getBigDecimal("supplierreliability"));
+                        pstmt.setInt(16, rs.getInt("supplierreliabilitytype"));
+                        pstmt.setString(17, rs.getString("supplierarticlecode"));
+                        pstmt.setInt(18, rs.getInt("availableinventory"));
+                        pstmt.setBigDecimal(19, rs.getBigDecimal("desiredsplit"));
+                        pstmt.setInt(20, rs.getInt("suppliedquantity"));
+                        pstmt.setDate(21, rs.getDate("orderfromdate"));
+                        pstmt.setDate(22, rs.getDate("ordertodate"));
+                        pstmt.setInt(23, rs.getInt("logisticUnit1"));
+                        pstmt.setInt(24, rs.getInt("logisticUnit2"));
+                        pstmt.setInt(25, rs.getInt("logisticUnit3"));
+                        pstmt.setInt(26, rs.getInt("logisticUnit4"));
+                        pstmt.setInt(27, rs.getInt("logisticUnit5"));
+                        pstmt.setInt(28, rs.getInt("logisticUnit6"));
+                        pstmt.setString(29, rs.getString("ud1"));
+                        pstmt.setString(30, rs.getString("ud1"));
+                        pstmt.setString(31, rs.getString("ud1"));
+                        pstmt.setString(32, rs.getString("ud1"));
+                        pstmt.setString(33, rs.getString("ud1"));
+                        
+                        pstmt.addBatch();
+                        counter++;
+                         if (counter == REGISTROS_BATCH) {
+                             pstmt.executeBatch();
+                             counter = 0;
+                         }
+
+                         }
+                         //revisamos si todavía hay sentencias pendientes de ejecutar
+                         if (counter > 0) {
+                             pstmt.executeBatch();
+                         }
+                         System.out.print("\n Proceso finalizado! \n");
+                         tituloResp = "Éxito";
+                         mensajeResp = "se ejecutó la interface Suppliers correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                   }
+               
             }
             cnt.close();
         } catch (SQLException ex) {
             Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(suppliers.size()>0){
-            try {
-                return suppliersInsert(suppliers);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla suppliers está vacía o hay inconvenientes de columnas";
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
+    
+    public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a eliminar los registros de Sql Server \n");
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Suppliers]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    } 
     
     
      public ResponseEntity suppliersInsert(ArrayList<Suppliers> t) throws ClassNotFoundException {
@@ -148,16 +228,7 @@ public class SuppliersServiceImp implements SuppliersService{
         
     }
     
-    public int emptyTable(Statement stmt){
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_Suppliers]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    } 
+    
     
     public int insertDataTable(Statement stmt, ArrayList<Suppliers> t) throws SQLException{
         
