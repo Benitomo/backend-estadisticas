@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.BillOfMaterial;
 import com.backend.slim4.service.BillOfMaterialService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,14 +20,38 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BillOfMaterialServiceImp implements BillOfMaterialService {
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity billOfMaterialSelect() {
-    String tituloResp  = "";
-    String mensajeResp = "";
-    ArrayList<BillOfMaterial> bill = new ArrayList<>();
+        // Mensaje de respuesta
+        String tituloResp  = "";
+        String mensajeResp = "";
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_BillOfMaterial]"
+                + "("
+                    + "controlId,"
+                    + "articleCode,"
+                    + "componentArticleCode,"
+                    + "quantity,"
+                    + "bomID,"
+                    + "lineNumber,"
+                    + "leadTime,"
+                    + "fromDate,"
+                    + "toDate,"
+                    + "bomType,"
+                    + "exceptionLevel"
+                + ") "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(articlecode) as articlecode,"
@@ -40,37 +65,55 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     + "bomtype,"
                     + "exceptionlevel "
                     + "from billofmaterial";
-            System.out.print("Entre a traer la info de Informix" + "\n" + "Query: \n" + sql + "\n");
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                BillOfMaterial b = new BillOfMaterial();
-                b.setControlId(rs.getInt("controlid"));
-                b.setCode(rs.getString("articlecode"));
-                b.setComponentArticleCode(rs.getString("componentarticlecode"));
-                b.setQuantity(rs.getBigDecimal("quantity"));
-                b.setBomID(rs.getString("bomid"));
-                b.setLineNumber(rs.getString("linenumber"));
-                b.setLeadTime(rs.getBigDecimal("leadtime"));
-                b.setFromDate(rs.getDate("fromdate"));
-                b.setToDate(rs.getDate("todate"));
-                b.setBomType(rs.getString("bomtype"));
-                b.setExceptionLevel(rs.getInt("exceptionlevel"));
-                bill.add(b);
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+               // Ejecutamos el query que trae la información de Informix    
+               ResultSet rs = stmt.executeQuery(sql);
+               // Contador que nos permite saber cuando llegamos al límite de inserción
+               int counter = 0;
+               int r = emptyTable(stmt2);
+               if(r>=0){
+                    System.out.print("\n Entré al while next \n");
+                    while (rs.next()) {
+                        pstmt.setInt(1, rs.getInt("controlid"));
+                        pstmt.setString(2, rs.getString("articlecode"));
+                        pstmt.setString(3, rs.getString("componentarticlecode"));
+                        pstmt.setBigDecimal(4, rs.getBigDecimal("quantity"));
+                        pstmt.setString(5, rs.getString("bomid"));
+                        pstmt.setString(6, rs.getString("linenumber"));
+                        pstmt.setBigDecimal(7, rs.getBigDecimal("leadtime"));
+                        pstmt.setDate(8, rs.getDate("fromdate"));
+                        pstmt.setDate(9, rs.getDate("todate"));
+                        pstmt.setString(10, rs.getString("bomtype"));
+                        pstmt.setInt(11, rs.getInt("exceptionlevel"));
+                        
+                        pstmt.addBatch();
+                        counter++;
+                         if (counter == REGISTROS_BATCH) {
+                             pstmt.executeBatch();
+                             counter = 0;
+                         }
+
+                         }
+                         //revisamos si todavía hay sentencias pendientes de ejecutar
+                         if (counter > 0) {
+                             pstmt.executeBatch();
+                         }
+                         System.out.print("\n Proceso finalizado! \n");
+                         tituloResp = "Éxito";
+                         mensajeResp = "se ejecutó la interface BillOfMaterial correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                   }
+               
             }
             cnt.close();
         } catch (SQLException ex) {
             Logger.getLogger(BillOfMaterialServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(bill.size()>0){
-            try {
-                return billOfMaterialInsert(bill);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla billofmaterial está vacía o hay inconvenientes de columnas";
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(BillOfMaterialServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();

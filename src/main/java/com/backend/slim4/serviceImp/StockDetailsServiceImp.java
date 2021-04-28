@@ -49,7 +49,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
                 + ") "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-              // Informix
+            // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
             // Sql Server
