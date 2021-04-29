@@ -5,6 +5,7 @@ import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.ArticleCodeMaster;
 import com.backend.slim4.service.ArticleCodeMasterService;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,14 +20,161 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ArticleCodeMasterServiceImp implements ArticleCodeMasterService{
+    
+    // Variable límite de registros
+    private static final int REGISTROS_BATCH = 1000;
     @Override
     public ResponseEntity articleCodeMasterSelect() {
+        // Mensaje de respuesta
         String tituloResp  = "";
         String mensajeResp = "";
-        ArrayList<ArticleCodeMaster> master = new ArrayList<>();
+        // Prepare Stament para inserción en Sql Server, se insertará por bloques.
+        String sqlPrepare = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_ArticleCodeMaster]"
+                + "("
+                + "controlId,"
+                    + "warehouse,"
+                    + "code,"
+                    + "creationDate,"
+                    + "description,"
+                    + "unitPrice,"
+                    + "salesPrice,"
+                    + "criterium1,"
+                    + "criterium2,"
+                    + "criterium3,"
+                    + "criterium4,"
+                    + "groupCode1,"
+                    + "groupCode2,"
+                    + "groupCode3,"
+                    + "groupCode4,"
+                    + "groupCode5,"
+                    + "groupCode6,"
+                    + "uD1,"
+                    + "uD2,"
+                    + "uD3,"
+                    + "uD4,"
+                    + "uD5,"
+                    + "uD6,"
+                    + "uD7,"
+                    + "uD8,"
+                    + "uD9,"
+                    + "uD10,"
+                    + "uD11,"
+                    + "uD12,"
+                    + "uD13,"
+                    + "uD14,"
+                    + "uD15,"
+                    + "aUDField1,"
+                    + "aUDField2,"
+                    + "aUDField3,"
+                    + "aUDField4,"
+                    + "aUDField5,"
+                    + "aUDField6,"
+                    + "aUDField7,"
+                    + "aUDField8,"
+                    + "aUDField9,"
+                    + "aUDField10,"
+                    + "aUDField11,"
+                    + "aUDField12,"
+                    + "aUDField13,"
+                    + "aUDField14,"
+                    + "aUDField15,"
+                    + "aUDField16,"
+                    + "aUDField17,"
+                    + "aUDField18,"
+                    + "aUDField19,"
+                    + "aUDField20,"
+                    + "aUDField21,"
+                    + "aUDField22,"
+                    + "aUDField23,"
+                    + "aUDField24,"
+                    + "aUDField25,"
+                    + "aUDField26,"
+                    + "aUDField27,"
+                    + "aUDField28,"
+                    + "aUDField29,"
+                    + "aUDField30,"
+                    + "aUDField31,"
+                    + "aUDField32,"
+                    + "aUDField33,"
+                    + "aUDField34,"
+                    + "aUDField35,"
+                    + "aUDField36,"
+                    + "aUDField37,"
+                    + "aUDField38,"
+                    + "aUDField39,"
+                    + "aUDField40,"
+                    + "aUDField41,"
+                    + "aUDField42,"
+                    + "aUDField43,"
+                    + "aUDField44,"
+                    + "aUDField45,"
+                    + "aUDField46,"
+                    + "aUDField47,"
+                    + "aUDField48,"
+                    + "aUDField49,"
+                    + "aUDField50,"
+                    + "aUDField51,"
+                    + "aUDField52,"
+                    + "aUDField53,"
+                    + "aUDField54,"
+                    + "aUDField55,"
+                    + "aUDField56,"
+                    + "aUDField57,"
+                    + "aUDField58,"
+                    + "aUDField59,"
+                    + "aUDField60,"
+                    + "aUDField61,"
+                    + "aUDField62,"
+                    + "aUDField63,"
+                    + "aUDField64,"
+                    + "aUDField65,"
+                    + "aUDField66,"
+                    + "aUDField67,"
+                    + "aUDField68,"
+                    + "aUDField69,"
+                    + "aUDField70,"
+                    + "aUDField71,"
+                    + "aUDField72,"
+                    + "aUDField73,"
+                    + "aUDField74,"
+                    + "aUDField75,"
+                    + "aUDField76,"
+                    + "aUDField77,"
+                    + "aUDField78,"
+                    + "aUDField79,"
+                    + "aUDField80,"
+                    + "aUDField81,"
+                    + "aUDField82,"
+                    + "aUDField83,"
+                    + "aUDField84,"
+                    + "aUDField85,"
+                    + "aUDField86,"
+                    + "aUDField87,"
+                    + "aUDField88,"
+                    + "aUDField89,"
+                    + "aUDField90,"
+                    + "aUDField91,"
+                    + "aUDField92,"
+                    + "aUDField93,"
+                    + "aUDField94,"
+                    + "aUDField95,"
+                    + "aUDField96,"
+                    + "aUDField97,"
+                    + "aUDField98,"
+                    + "aUDField99,"
+                    + "aUDField100"
+                    + ") "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+             // Informix
             Connection cnt = GetConnection.informix("slim4");
             Statement stmt = cnt.createStatement();
+            // Sql Server
+            Connection cnt2 = GetConnection.sqlServer();
+            Statement stmt2 = cnt2.createStatement();
+            // Query que trae la información de Informix
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(warehousecode) as warehousecode,"
@@ -162,165 +310,196 @@ public class ArticleCodeMasterServiceImp implements ArticleCodeMasterService{
                     + "audfield99,"
                     + "audfield100 "
                     + "from articlecodemaster";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                ArticleCodeMaster m = new ArticleCodeMaster();
-                m.setControlId(rs.getInt("controlid"));
-                m.setWarehousecode(rs.getString("warehousecode"));
-                m.setCode(rs.getString("articlecode"));
-                m.setCreationDate(rs.getDate("creationdate"));
-                m.setDescription(rs.getString("description"));
-                m.setUnitPrice(rs.getBigDecimal("unitprice"));
-                m.setSalesPrice(rs.getBigDecimal("salesprice"));
-                m.setCriterium1(rs.getBigDecimal("criterium1"));
-                m.setCriterium1(rs.getBigDecimal("criterium2"));
-                m.setCriterium1(rs.getBigDecimal("criterium3"));
-                m.setCriterium1(rs.getBigDecimal("criterium4"));
-                m.setGroupCode1(rs.getString("groupcode1"));
-                m.setGroupCode1(rs.getString("groupcode2"));
-                m.setGroupCode1(rs.getString("groupcode3"));
-                m.setGroupCode1(rs.getString("groupcode4"));
-                m.setGroupCode1(rs.getString("groupcode5"));
-                m.setGroupCode1(rs.getString("groupcode6"));
-                m.setuD1(rs.getString("ud1"));
-                m.setuD1(rs.getString("ud2"));
-                m.setuD1(rs.getString("ud3"));
-                m.setuD1(rs.getString("ud4"));
-                m.setuD1(rs.getString("ud5"));
-                m.setuD1(rs.getString("ud6"));
-                m.setuD1(rs.getString("ud7"));
-                m.setuD1(rs.getString("ud8"));
-                m.setuD1(rs.getString("ud9"));
-                m.setuD1(rs.getString("ud10"));
-                m.setuD1(rs.getString("ud11"));
-                m.setuD1(rs.getString("ud12"));
-                m.setuD1(rs.getString("ud13"));
-                m.setuD1(rs.getString("ud14"));
-                m.setuD1(rs.getString("ud15"));
-                m.setuD1(rs.getString("audfield1"));
-                m.setuD1(rs.getString("audfield2"));
-                m.setuD1(rs.getString("audfield3"));
-                m.setuD1(rs.getString("audfield4"));
-                m.setuD1(rs.getString("audfield5"));
-                m.setuD1(rs.getString("audfield6"));
-                m.setuD1(rs.getString("audfield7"));
-                m.setuD1(rs.getString("audfield8"));
-                m.setuD1(rs.getString("audfield9"));
-                m.setuD1(rs.getString("audfield10"));
-                m.setuD1(rs.getString("audfield11"));
-                m.setuD1(rs.getString("audfield12"));
-                m.setuD1(rs.getString("audfield13"));
-                m.setuD1(rs.getString("audfield14"));
-                m.setuD1(rs.getString("audfield15"));
-                m.setuD1(rs.getString("audfield16"));
-                m.setuD1(rs.getString("audfield17"));
-                m.setuD1(rs.getString("audfield18"));
-                m.setuD1(rs.getString("audfield19"));
-                m.setuD1(rs.getString("audfield20"));
-                m.setuD1(rs.getString("audfield21"));
-                m.setuD1(rs.getString("audfield22"));
-                m.setuD1(rs.getString("audfield23"));
-                m.setuD1(rs.getString("audfield23"));
-                m.setuD1(rs.getString("audfield24"));
-                m.setuD1(rs.getString("audfield25"));
-                m.setuD1(rs.getString("audfield26"));
-                m.setuD1(rs.getString("audfield27"));
-                m.setuD1(rs.getString("audfield28"));
-                m.setuD1(rs.getString("audfield29"));
-                m.setuD1(rs.getString("audfield30"));
-                m.setuD1(rs.getString("audfield31"));
-                m.setuD1(rs.getString("audfield32"));
-                m.setuD1(rs.getString("audfield33"));
-                m.setuD1(rs.getString("audfield34"));
-                m.setuD1(rs.getString("audfield35"));
-                m.setuD1(rs.getString("audfield36"));
-                m.setuD1(rs.getString("audfield37"));
-                m.setuD1(rs.getString("audfield38"));
-                m.setuD1(rs.getString("audfield39"));
-                m.setuD1(rs.getString("audfield40"));
-                m.setuD1(rs.getString("audfield41"));
-                m.setuD1(rs.getString("audfield42"));
-                m.setuD1(rs.getString("audfield43"));
-                m.setuD1(rs.getString("audfield44"));
-                m.setuD1(rs.getString("audfield45"));
-                m.setuD1(rs.getString("audfield46"));
-                m.setuD1(rs.getString("audfield47"));
-                m.setuD1(rs.getString("audfield48"));
-                m.setuD1(rs.getString("audfield49"));
-                m.setuD1(rs.getString("audfield50"));
-                m.setuD1(rs.getString("audfield51"));
-                m.setuD1(rs.getString("audfield52"));
-                m.setuD1(rs.getString("audfield53"));
-                m.setuD1(rs.getString("audfield54"));
-                m.setuD1(rs.getString("audfield55"));
-                m.setuD1(rs.getString("audfield56"));
-                m.setuD1(rs.getString("audfield57"));
-                m.setuD1(rs.getString("audfield58"));
-                m.setuD1(rs.getString("audfield59"));
-                m.setuD1(rs.getString("audfield60"));
-                m.setuD1(rs.getString("audfield61"));
-                m.setuD1(rs.getString("audfield62"));
-                m.setuD1(rs.getString("audfield63"));
-                m.setuD1(rs.getString("audfield64"));
-                m.setuD1(rs.getString("audfield65"));
-                m.setuD1(rs.getString("audfield66"));
-                m.setuD1(rs.getString("audfield67"));
-                m.setuD1(rs.getString("audfield68"));
-                m.setuD1(rs.getString("audfield69"));
-                m.setuD1(rs.getString("audfield70"));
-                m.setuD1(rs.getString("audfield71"));
-                m.setuD1(rs.getString("audfield72"));
-                m.setuD1(rs.getString("audfield73"));
-                m.setuD1(rs.getString("audfield74"));
-                m.setuD1(rs.getString("audfield75"));
-                m.setuD1(rs.getString("audfield76"));
-                m.setuD1(rs.getString("audfield77"));
-                m.setuD1(rs.getString("audfield78"));
-                m.setuD1(rs.getString("audfield79"));
-                m.setuD1(rs.getString("audfield80"));
-                m.setuD1(rs.getString("audfield81"));
-                m.setuD1(rs.getString("audfield82"));
-                m.setuD1(rs.getString("audfield83"));
-                m.setuD1(rs.getString("audfield84"));
-                m.setuD1(rs.getString("audfield85"));
-                m.setuD1(rs.getString("audfield86"));
-                m.setuD1(rs.getString("audfield87"));
-                m.setuD1(rs.getString("audfield88"));
-                m.setuD1(rs.getString("audfield89"));
-                m.setuD1(rs.getString("audfield90"));
-                m.setuD1(rs.getString("audfield91"));
-                m.setuD1(rs.getString("audfield92"));
-                m.setuD1(rs.getString("audfield93"));
-                m.setuD1(rs.getString("audfield94"));
-                m.setuD1(rs.getString("audfield95"));
-                m.setuD1(rs.getString("audfield96"));
-                m.setuD1(rs.getString("audfield97"));
-                m.setuD1(rs.getString("audfield98"));
-                m.setuD1(rs.getString("audfield99"));
-                m.setuD1(rs.getString("audfield100"));
-                master.add(m);
+            System.out.print("\n Entré a ejecutar query select en informix \n");
+            
+            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
+               // Ejecutamos el query que trae la información de Informix    
+               ResultSet rs = stmt.executeQuery(sql);
+               // Contador que nos permite saber cuando llegamos al límite de inserción
+               int counter = 0;
+               int r = emptyTable(stmt2);
+               System.out.print("\n Resultado del Delete: " + r + "\n");
+               if(r>=0){
+                   System.out.print("\n Entré al while next \n");
+                    while (rs.next()) {
+                        pstmt.setInt(1, rs.getInt("controlid"));
+                        pstmt.setString(2, rs.getString("warehousecode"));
+                        pstmt.setString(3, rs.getString("articlecode"));
+                        pstmt.setDate(4, rs.getDate("creationdate"));
+                        pstmt.setString(5, rs.getString("description"));
+                        pstmt.setBigDecimal(6, rs.getBigDecimal("unitprice"));
+                        pstmt.setBigDecimal(7, rs.getBigDecimal("salesprice"));
+                        pstmt.setBigDecimal(8, rs.getBigDecimal("criterium1"));
+                        pstmt.setBigDecimal(9, rs.getBigDecimal("criterium2"));
+                        pstmt.setBigDecimal(10, rs.getBigDecimal("criterium3"));
+                        pstmt.setBigDecimal(11, rs.getBigDecimal("criterium4"));
+                        pstmt.setString(12, rs.getString("groupcode1"));
+                        pstmt.setString(13, rs.getString("groupcode2"));
+                        pstmt.setString(14, rs.getString("groupcode3"));
+                        pstmt.setString(15, rs.getString("groupcode4"));
+                        pstmt.setString(16, rs.getString("groupcode5"));
+                        pstmt.setString(17, rs.getString("groupcode6"));
+                        pstmt.setString(18, rs.getString("ud1"));
+                        pstmt.setString(19, rs.getString("ud2"));
+                        pstmt.setString(20, rs.getString("ud3"));
+                        pstmt.setString(21, rs.getString("ud4"));
+                        pstmt.setString(22, rs.getString("ud5"));
+                        pstmt.setString(23, rs.getString("ud6"));
+                        pstmt.setString(24, rs.getString("ud7"));
+                        pstmt.setString(25, rs.getString("ud8"));
+                        pstmt.setString(26, rs.getString("ud9"));
+                        pstmt.setString(27, rs.getString("ud10"));
+                        pstmt.setString(28, rs.getString("ud11"));
+                        pstmt.setString(29, rs.getString("ud12"));
+                        pstmt.setString(30, rs.getString("ud13"));
+                        pstmt.setString(31, rs.getString("ud14"));
+                        pstmt.setString(32, rs.getString("ud15"));
+                        pstmt.setString(33, rs.getString("audfield1"));
+                        pstmt.setString(34, rs.getString("audfield2"));
+                        pstmt.setString(35, rs.getString("audfield3"));
+                        pstmt.setString(36, rs.getString("audfield4"));
+                        pstmt.setString(37, rs.getString("audfield5"));
+                        pstmt.setString(38, rs.getString("audfield6"));
+                        pstmt.setString(39, rs.getString("audfield7"));
+                        pstmt.setString(40, rs.getString("audfield8"));
+                        pstmt.setString(41, rs.getString("audfield9"));
+                        pstmt.setString(42, rs.getString("audfield10"));
+                        pstmt.setString(43, rs.getString("audfield11"));
+                        pstmt.setString(44, rs.getString("audfield12"));
+                        pstmt.setString(45, rs.getString("audfield13"));
+                        pstmt.setString(46, rs.getString("audfield14"));
+                        pstmt.setString(47, rs.getString("audfield15"));
+                        pstmt.setString(48, rs.getString("audfield16"));
+                        pstmt.setString(49, rs.getString("audfield17"));
+                        pstmt.setString(50, rs.getString("audfield18"));
+                        pstmt.setString(51, rs.getString("audfield19"));
+                        pstmt.setString(52, rs.getString("audfield20"));
+                        pstmt.setString(53, rs.getString("audfield21"));
+                        pstmt.setString(54, rs.getString("audfield22"));
+                        pstmt.setString(55, rs.getString("audfield23"));
+                        pstmt.setString(56, rs.getString("audfield24"));
+                        pstmt.setString(57, rs.getString("audfield25"));
+                        pstmt.setString(58, rs.getString("audfield26"));
+                        pstmt.setString(59, rs.getString("audfield27"));
+                        pstmt.setString(60, rs.getString("audfield28"));
+                        pstmt.setString(61, rs.getString("audfield29"));
+                        pstmt.setString(62, rs.getString("audfield30"));
+                        pstmt.setString(63, rs.getString("audfield31"));
+                        pstmt.setString(64, rs.getString("audfield32"));
+                        pstmt.setString(65, rs.getString("audfield33"));
+                        pstmt.setString(66, rs.getString("audfield34"));
+                        pstmt.setString(67, rs.getString("audfield35"));
+                        pstmt.setString(68, rs.getString("audfield36"));
+                        pstmt.setString(69, rs.getString("audfield37"));
+                        pstmt.setString(70, rs.getString("audfield38"));
+                        pstmt.setString(71, rs.getString("audfield39"));
+                        pstmt.setString(72, rs.getString("audfield40"));
+                        pstmt.setString(73, rs.getString("audfield41"));
+                        pstmt.setString(74, rs.getString("audfield42"));
+                        pstmt.setString(75, rs.getString("audfield43"));
+                        pstmt.setString(76, rs.getString("audfield44"));
+                        pstmt.setString(77, rs.getString("audfield45"));
+                        pstmt.setString(78, rs.getString("audfield46"));
+                        pstmt.setString(79, rs.getString("audfield47"));
+                        pstmt.setString(80, rs.getString("audfield48"));
+                        pstmt.setString(81, rs.getString("audfield49"));
+                        pstmt.setString(82, rs.getString("audfield50"));
+                        pstmt.setString(83, rs.getString("audfield51"));
+                        pstmt.setString(84, rs.getString("audfield52"));
+                        pstmt.setString(85, rs.getString("audfield53"));
+                        pstmt.setString(86, rs.getString("audfield54"));
+                        pstmt.setString(87, rs.getString("audfield55"));
+                        pstmt.setString(88, rs.getString("audfield56"));
+                        pstmt.setString(89, rs.getString("audfield57"));
+                        pstmt.setString(90, rs.getString("audfield58"));
+                        pstmt.setString(91, rs.getString("audfield59"));
+                        pstmt.setString(92, rs.getString("audfield60"));
+                        pstmt.setString(93, rs.getString("audfield61"));
+                        pstmt.setString(94, rs.getString("audfield62"));
+                        pstmt.setString(95, rs.getString("audfield63"));
+                        pstmt.setString(96, rs.getString("audfield64"));
+                        pstmt.setString(97, rs.getString("audfield65"));
+                        pstmt.setString(98, rs.getString("audfield66"));
+                        pstmt.setString(99, rs.getString("audfield67"));
+                        pstmt.setString(100, rs.getString("audfield68"));
+                        pstmt.setString(101, rs.getString("audfield69"));
+                        pstmt.setString(102, rs.getString("audfield70"));
+                        pstmt.setString(103, rs.getString("audfield71"));
+                        pstmt.setString(104, rs.getString("audfield72"));
+                        pstmt.setString(105, rs.getString("audfield73"));
+                        pstmt.setString(106, rs.getString("audfield74"));
+                        pstmt.setString(107, rs.getString("audfield75"));
+                        pstmt.setString(108, rs.getString("audfield76"));
+                        pstmt.setString(109, rs.getString("audfield77"));
+                        pstmt.setString(110, rs.getString("audfield78"));
+                        pstmt.setString(111, rs.getString("audfield79"));
+                        pstmt.setString(112, rs.getString("audfield80"));
+                        pstmt.setString(113, rs.getString("audfield81"));
+                        pstmt.setString(114, rs.getString("audfield82"));
+                        pstmt.setString(115, rs.getString("audfield83"));
+                        pstmt.setString(116, rs.getString("audfield84"));
+                        pstmt.setString(117, rs.getString("audfield85"));
+                        pstmt.setString(118, rs.getString("audfield86"));
+                        pstmt.setString(119, rs.getString("audfield87"));
+                        pstmt.setString(120, rs.getString("audfield88"));
+                        pstmt.setString(121, rs.getString("audfield89"));
+                        pstmt.setString(122, rs.getString("audfield90"));
+                        pstmt.setString(123, rs.getString("audfield91"));
+                        pstmt.setString(124, rs.getString("audfield92"));
+                        pstmt.setString(125, rs.getString("audfield93"));
+                        pstmt.setString(126, rs.getString("audfield94"));
+                        pstmt.setString(127, rs.getString("audfield95"));
+                        pstmt.setString(128, rs.getString("audfield96"));
+                        pstmt.setString(129, rs.getString("audfield97"));
+                        pstmt.setString(130, rs.getString("audfield98"));
+                        pstmt.setString(131, rs.getString("audfield99"));
+                        pstmt.setString(132, rs.getString("audfield100"));
+                        
+                       
+                        pstmt.addBatch();
+                        counter++;
+                         if (counter == REGISTROS_BATCH) {
+                             pstmt.executeBatch();
+                             counter = 0;
+                         }
+
+                         }
+                         //revisamos si todavía hay sentencias pendientes de ejecutar
+                         if (counter > 0) {
+                             pstmt.executeBatch();
+                         }
+                         System.out.print("\n Proceso finalizado! \n");
+                         tituloResp = "Éxito";
+                         mensajeResp = "se ejecutó la interface ArticleCodeMaster correctamente!";
+                }else{
+                    tituloResp = "Error";
+                    mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
+                   }
+               
             }
             cnt.close();
         } catch (SQLException ex) {
             Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-         if(master.size()>0){
-            try {
-                return articleCodeMasterInsert(master);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        } else {
-            tituloResp = "Error";
-            mensajeResp = "La tabla articlecodemaster está vacía o hay inconvenientes de columnas";
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     } 
+    
+    public int emptyTable(Statement stmt){
+        System.out.print("\n Entré a eliminar los registros en Sql Server: \n");
+        String sql = "delete from [slim4interface_test].[dbo].[S4Import_ArticleCodeMaster]";
+        int result = 0;
+        try {
+            result = stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
     
     public ResponseEntity articleCodeMasterInsert(ArrayList<ArticleCodeMaster> t) throws ClassNotFoundException {
         String tituloResp = "";
@@ -348,16 +527,7 @@ public class ArticleCodeMasterServiceImp implements ArticleCodeMasterService{
         
     }
     
-    public int emptyTable(Statement stmt){
-        String sql = "delete from [slim4interface_test].[dbo].[S4Import_ArticleCodeMaster]";
-        int result = 0;
-        try {
-            result = stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
+    
     
     public int insertDataTable(Statement stmt, ArrayList<ArticleCodeMaster> t) throws SQLException{
         String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[S4Import_ArticleCodeMaster]"
