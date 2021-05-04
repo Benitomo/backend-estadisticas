@@ -33,6 +33,8 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 2;
     @Override
     public ResponseEntity importLogisticsSelect() {
         // Mensaje de respuesta
@@ -79,7 +81,38 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
             Connection cnt2 = GetConnection.sqlServer();
             Statement stmt2 = cnt2.createStatement();
             // Query que trae la información de Informix
-            String sql = "SELECT * from logistics";
+            String sql = "SELECT "
+                    + "controlid,"
+                    + "TRIM(warehousecode) as warehousecode,"
+                    + "TRIM(articlecode) as articlecode,"
+                    + "TRIM(suppliernumber) as suppliernumber,"
+                    + "TRIM(suppliername) as suppliername,"
+                    + "leadtime,"
+                    + "reviewtime,"
+                    + "supplierreliability,"
+                    + "supplierreliabilityType,"
+                    + "stockeditem,"
+                    + "moq,"
+                    + "ioq,"
+                    + "eoq,"
+                    + "logisticunit1,"
+                    + "logisticunit2,"
+                    + "logisticunit3,"
+                    + "logisticunit4,"
+                    + "logisticunit5,"
+                    + "logisticunit6,"
+                    + "insuranceinventory,"
+                    + "insuranceinventoryType,"
+                    + "targetservicelevel,"
+                    + "plcarticlecode,"
+                    + "plcdate,"
+                    + "plcperc,"
+                    + "abcclass,"
+                    + "buyingprice,"
+                    + "msq,"
+                    + "isq "
+                    + "from logistics";
+            System.out.print("\n ------------------------------LOGISTICS------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
             // Ejecutamos el query que trae la información de Informix    
@@ -133,6 +166,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                     pstmt.executeBatch();
                 }
                 System.out.print("\n Proceso finalizado! \n");
+                System.out.print("\n ------------------------------LOGISTICS------------------------------ \n");
                 tituloResp = "Éxito";
                 mensajeResp = "se ejecutó la interface Logistics correctamente!";
                 }else{

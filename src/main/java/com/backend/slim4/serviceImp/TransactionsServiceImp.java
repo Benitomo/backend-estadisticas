@@ -23,6 +23,8 @@ public class TransactionsServiceImp implements TransactionsService {
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 11;
     @Override
     public ResponseEntity transactionsSelect() {
     // Mensaje de respuesta
@@ -44,7 +46,7 @@ public class TransactionsServiceImp implements TransactionsService {
                     + "controlid,"
                     + "TRIM(transactionnumber) as transactionnumber,"
                     + "TRIM(transactiontype) as transactiontype,"
-                    + "transactionname,"
+                    + "TRIM(transactionname) as transactionname,"
                     + "transactionstatus,"
                     + "TRIM(warehouse) as warehouse,"
                     + "TRIM(articlecode) as articlecode,"
@@ -66,10 +68,10 @@ public class TransactionsServiceImp implements TransactionsService {
                     + "buyingprice,"
                     + "supplyinglocation,"
                     + "conversionfactor,"
-                    + "ud1,"
-                    + "ud2,"
-                    + "ud3,"
-                    + "ud4,"
+                    + "TRIM(ud1) as ud1,"
+                    + "TRIM(ud2) as ud2,"
+                    + "TRIM(ud3) as ud3,"
+                    + "TRIM(ud4) as ud4,"
                     + "transactionissuetime "
                     + "from transactions";
            try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
@@ -77,6 +79,7 @@ public class TransactionsServiceImp implements TransactionsService {
             ResultSet rs = stmt.executeQuery(sql);
             int counter = 0;
             int r = emptyTable(stmt2);
+            System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
             System.out.print("\n Registros eliminados en Sql Server: " + r + "\n");
             if(r>=0){
                 System.out.print("\n Entré a insertar la info " + "\n");
@@ -145,6 +148,7 @@ public class TransactionsServiceImp implements TransactionsService {
     
     public int emptyTable(Statement stmt){
         System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
         int result = 0;
         try {

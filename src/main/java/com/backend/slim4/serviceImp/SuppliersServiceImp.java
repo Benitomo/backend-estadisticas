@@ -23,6 +23,8 @@ public class SuppliersServiceImp implements SuppliersService{
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 13;
     
     @Override
     public ResponseEntity suppliersSelect() {
@@ -79,9 +81,9 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "controlid,"
                     + "TRIM(warehousecode) as warehousecode,"
                     + "TRIM(articlecode) as articlecode,"
-                    + "suppliernumber,"
-                    + "suppliername,"
-                    + "primarysupplier,"
+                    + "TRIM(suppliernumber) as suppliernumber,"
+                    + "TRIM(suppliername) as suppliername,"
+                    + "TRIM(primarysupplier) as primarysupplier ,"
                     + "preference,"
                     + "leadtime,"
                     + "reviewtime,"
@@ -92,7 +94,7 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "eoq,"
                     + "supplierreliability,"
                     + "supplierreliabilitytype,"
-                    + "supplierarticlecode,"
+                    + "TRIM(supplierarticlecode) as supplierarticlecode,"
                     + "availableinventory,"
                     + "desiredsplit,"
                     + "suppliedquantity,"
@@ -104,12 +106,13 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "logisticUnit4,"
                     + "logisticUnit5,"
                     + "logisticUnit6,"
-                    + "ud1,"
-                    + "ud2,"
-                    + "ud3,"
-                    + "ud4,"
-                    + "ud5 "
+                    + "TRIM(ud1) as ud1,"
+                    + "TRIM(ud2) as ud2,"
+                    + "TRIM(ud3) as ud3,"
+                    + "TRIM(ud4) as ud4,"
+                    + "TRIM(ud5) as ud5 "
                     + "from suppliers";
+            System.out.print("\n ------------------------------SUPPLIERS------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
@@ -169,6 +172,7 @@ public class SuppliersServiceImp implements SuppliersService{
                              pstmt.executeBatch();
                          }
                          System.out.print("\n Proceso finalizado! \n");
+                         System.out.print("\n ------------------------------SUPPLIERS------------------------------ \n");
                          tituloResp = "Éxito";
                          mensajeResp = "se ejecutó la interface Suppliers correctamente!";
                 }else{

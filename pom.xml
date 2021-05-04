@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.backend</groupId>
-	<artifactId>backend-slim4</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>api</artifactId>
+	<version>slim4</version>
 	<name>backend-slim4</name>
 	<description>Demo project for Spring Boot</description>
 

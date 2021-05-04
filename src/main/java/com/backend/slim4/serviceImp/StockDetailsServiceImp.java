@@ -23,6 +23,8 @@ public class StockDetailsServiceImp implements StockDetailsService {
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 0;
     @Override
     public ResponseEntity stockDetailsSelect() {
     // Mensaje de respuesta
@@ -68,11 +70,12 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "excludefromdate,"
                     + "initialshelflife,"
                     + "remainingshelflife,"
-                    + "ud1,"
-                    + "ud2,"
-                    + "ud3,"
-                    + "ud4 "
+                    + "TRIM(ud1) as ud1,"
+                    + "TRIM(ud2) as ud1,"
+                    + "TRIM(ud3) as ud3,"
+                    + "TRIM(ud4) as ud4 "
                     + "from stockdetails";
+            System.out.print("\n ------------------------------STOCKDETAILS------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
@@ -113,6 +116,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
                             pstmt.executeBatch();
                         }
                         System.out.print("\n Proceso finalizado! \n");
+                        System.out.print("\n ------------------------------STOCKDETAILS------------------------------ \n");
                         tituloResp = "Éxito";
                         mensajeResp = "se ejecutó la interface StockDetails correctamente!";
                         }else{

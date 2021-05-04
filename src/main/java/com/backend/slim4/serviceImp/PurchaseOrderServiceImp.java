@@ -23,6 +23,8 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 5;
     @Override
     public ResponseEntity purchaseOrderSelect() {
        // Mensaje de respuesta
@@ -63,7 +65,30 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
             Connection cnt2 = GetConnection.sqlServer();
             Statement stmt2 = cnt2.createStatement();
             // Query que trae la información de Informix
-            String sql = "SELECT * from purchaseorder";
+            String sql = "SELECT "
+                    + "controlid,"
+                    + "TRIM(warehousecode) as warehousecode,"
+                    + "TRIM(articlecode) as articlecode,"
+                    + "TRIM(numbers) as numbers,"
+                    + "deliverydate,"
+                    + "openquantity,"
+                    + "supplier,"
+                    + "TRIM(comments) as comments,"
+                    + "originalquantity,"
+                    + "suppliedquantity,"
+                    + "TRIM(freetext1) as freetext1,"
+                    + "TRIM(freetext2) as freetext2,"
+                    + "freenumber1,"
+                    + "freenumber2,"
+                    + "ordertypenumber,"
+                    + "line,"
+                    + "excludesetting, "
+                    + "excludedate, "
+                    + "excludefromam, "
+                    + "TRIM(suppliernumber) as suppliernumber, "
+                    + "TRIM(suppliername) as suppliername"
+                    + " from purchaseorder";
+            System.out.print("\n ------------------------------PURCHASEORDER------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
             // Ejecutamos el query que trae la información de Informix    
@@ -111,6 +136,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                         pstmt.executeBatch();
                     }
                     System.out.print("\n Proceso finalizado! \n");
+                    System.out.print("\n ------------------------------PURCHASEORDER------------------------------ \n");
                     tituloResp = "Éxito";
                     mensajeResp = "se ejecutó la interface Logistics correctamente!";
                     }else{

@@ -23,6 +23,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
     
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
+    // ID de la interface
+    private static final int importType = 7;
     @Override
     public ResponseEntity billOfMaterialSelect() {
         // Mensaje de respuesta
@@ -41,9 +43,11 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     + "fromDate,"
                     + "toDate,"
                     + "bomType,"
-                    + "exceptionLevel"
+                    + "exceptionLevel,"
+                    + "warehouse,"
+                    + "componentWarehouse"
                 + ") "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             // Informix
             Connection cnt = GetConnection.informix("slim4");
@@ -63,8 +67,11 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     + "fromdate,"
                     + "todate,"
                     + "bomtype,"
-                    + "exceptionlevel "
+                    + "exceptionlevel,"
+                    + "warehouse,"
+                    + "componentwarehouse "
                     + "from billofmaterial";
+            System.out.print("\n ------------------------------BILLOFMATERIAL------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
@@ -101,6 +108,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                              pstmt.executeBatch();
                          }
                          System.out.print("\n Proceso finalizado! \n");
+                         System.out.print("\n ------------------------------BILLOFMATERIAL------------------------------ \n");
                          tituloResp = "Éxito";
                          mensajeResp = "se ejecutó la interface BillOfMaterial correctamente!";
                 }else{

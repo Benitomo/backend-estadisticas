@@ -16,6 +16,8 @@ public class BillOfMaterial {
     Date toDate;
     String bomType;
     int exceptionLevel;
+    String warehouse;
+    String componentWarehouse;
 
     public int getControlId() {
         return controlId;
@@ -105,6 +107,23 @@ public class BillOfMaterial {
     public void setExceptionLevel(int exceptionLevel) {
         this.exceptionLevel = exceptionLevel;
     }
+
+    public String getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(String warehouse) {
+        this.warehouse = warehouse;
+    }
+
+    public String getComponentWarehouse() {
+        return componentWarehouse;
+    }
+
+    public void setComponentWarehouse(String componentWarehouse) {
+        this.componentWarehouse = componentWarehouse;
+    }
+    
     
     
     
