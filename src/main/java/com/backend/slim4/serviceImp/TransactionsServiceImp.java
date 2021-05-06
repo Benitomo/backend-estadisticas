@@ -2,7 +2,9 @@
 package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.GetConnection;
+import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.model.Transactions;
+import com.backend.slim4.service.ImportControlService;
 import com.backend.slim4.service.TransactionsService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,13 +16,15 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionsServiceImp implements TransactionsService {
-    
+    @Autowired
+    ImportControlService control_service;
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
     // ID de la interface
@@ -41,6 +45,7 @@ public class TransactionsServiceImp implements TransactionsService {
             Connection cnt2 = GetConnection.sqlServer();
             Statement stmt2 = cnt2.createStatement();
             // Query que trae la información de Informix
+            System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
             System.out.print("\n Entré a ejecutar query select en informix \n");
             String sql = "SELECT "
                     + "controlid,"
@@ -79,7 +84,7 @@ public class TransactionsServiceImp implements TransactionsService {
             ResultSet rs = stmt.executeQuery(sql);
             int counter = 0;
             int r = emptyTable(stmt2);
-            System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
+            
             System.out.print("\n Registros eliminados en Sql Server: " + r + "\n");
             if(r>=0){
                 System.out.print("\n Entré a insertar la info " + "\n");
@@ -126,7 +131,14 @@ public class TransactionsServiceImp implements TransactionsService {
                         if (counter > 0) {
                             pstmt.executeBatch();
                         }
+                        ImportControl control = new ImportControl();
+                        control.setControlID(1);
+                        control.setImportType(importType);
+                        control.setControlTimestamp("");
+                        control.setControlStatus(4);
+                        control_service.insert(stmt2, importType, control);
                         System.out.print("\n Proceso finalizado! \n");
+                        System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
                         tituloResp = "Éxito";
                         mensajeResp = "se ejecutó la interface Transactions correctamente!";
                         }else{
@@ -148,7 +160,7 @@ public class TransactionsServiceImp implements TransactionsService {
     
     public int emptyTable(Statement stmt){
         System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
-        System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
+        
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
         int result = 0;
         try {

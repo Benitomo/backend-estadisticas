@@ -6,7 +6,9 @@
 package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.GetConnection;
+import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.model.ImportLogistics;
+import com.backend.slim4.service.ImportControlService;
 import com.backend.slim4.service.ImportLogisticsService;
 import com.google.gson.Gson;
 import java.sql.Connection;
@@ -20,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ImportLogisticsServiceImp implements ImportLogisticsService {
-    
+    @Autowired
+    ImportControlService control_service;
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
     // ID de la interface
@@ -165,6 +169,12 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                 if (counter > 0) {
                     pstmt.executeBatch();
                 }
+                ImportControl control = new ImportControl();
+                control.setControlID(1);
+                control.setImportType(importType);
+                control.setControlTimestamp("");
+                control.setControlStatus(4);
+                control_service.insert(stmt2, importType, control);
                 System.out.print("\n Proceso finalizado! \n");
                 System.out.print("\n ------------------------------LOGISTICS------------------------------ \n");
                 tituloResp = "Éxito";

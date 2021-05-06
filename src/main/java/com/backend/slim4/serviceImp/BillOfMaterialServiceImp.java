@@ -3,7 +3,9 @@ package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.GetConnection;
 import com.backend.slim4.model.BillOfMaterial;
+import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.service.BillOfMaterialService;
+import com.backend.slim4.service.ImportControlService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,13 +16,15 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BillOfMaterialServiceImp implements BillOfMaterialService {
-    
+    @Autowired
+    ImportControlService control_service;
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
     // ID de la interface
@@ -94,6 +98,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         pstmt.setDate(9, rs.getDate("todate"));
                         pstmt.setString(10, rs.getString("bomtype"));
                         pstmt.setInt(11, rs.getInt("exceptionlevel"));
+                        pstmt.setString(12, rs.getString("warehouse"));
+                        pstmt.setString(13, rs.getString("componentwarehouse"));
                         
                         pstmt.addBatch();
                         counter++;
@@ -107,6 +113,12 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                          if (counter > 0) {
                              pstmt.executeBatch();
                          }
+                            ImportControl control = new ImportControl();
+                            control.setControlID(1);
+                            control.setImportType(importType);
+                            control.setControlTimestamp("");
+                            control.setControlStatus(4);
+                            control_service.insert(stmt2, importType, control);
                          System.out.print("\n Proceso finalizado! \n");
                          System.out.print("\n ------------------------------BILLOFMATERIAL------------------------------ \n");
                          tituloResp = "Éxito";

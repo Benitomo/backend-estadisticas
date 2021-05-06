@@ -2,7 +2,9 @@
 package com.backend.slim4.serviceImp;
 
 import com.backend.slim4.GetConnection;
+import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.model.PurchaseOrder;
+import com.backend.slim4.service.ImportControlService;
 import com.backend.slim4.service.PurchaseOrderService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,19 +16,22 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PurchaseOrderServiceImp implements PurchaseOrderService{
-    
+    @Autowired
+    ImportControlService control_service;
     // Variable límite de registros
     private static final int REGISTROS_BATCH = 1000;
     // ID de la interface
     private static final int importType = 5;
     @Override
     public ResponseEntity purchaseOrderSelect() {
+        
        // Mensaje de respuesta
         String tituloResp  = "";
         String mensajeResp = "";
@@ -135,6 +140,12 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     if (counter > 0) {
                         pstmt.executeBatch();
                     }
+                    ImportControl control = new ImportControl();
+                    control.setControlID(1);
+                    control.setImportType(importType);
+                    control.setControlTimestamp("");
+                    control.setControlStatus(4);
+                    control_service.insert(stmt2, importType, control);
                     System.out.print("\n Proceso finalizado! \n");
                     System.out.print("\n ------------------------------PURCHASEORDER------------------------------ \n");
                     tituloResp = "Éxito";

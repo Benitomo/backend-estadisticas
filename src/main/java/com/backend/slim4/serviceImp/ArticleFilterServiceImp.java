@@ -61,7 +61,7 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
             int counter = 0;
             int r = emptyTable(stmt2);
             if(r>=0){
-                
+            System.out.print("\n Entré a ejecutar el insert en Sql Server (Preparar Statement e insertar por lotes de 1000) \n");
             while (rs.next()) {
                 
                 ArticleFilter article = new ArticleFilter();
