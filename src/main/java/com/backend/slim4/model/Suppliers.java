@@ -26,8 +26,8 @@ public class Suppliers {
     int availableInventory;
     BigDecimal desiredSplit;
     int suppliedQuantity;
-    Date orderFromDate;
-    Date orderToDate;
+    String orderFromDate;
+    String orderToDate;
     int logisticUnit1;
     int logisticUnit2;
     int logisticUnit3;
@@ -200,19 +200,19 @@ public class Suppliers {
         this.suppliedQuantity = suppliedQuantity;
     }
 
-    public Date getOrderFromDate() {
+    public String getOrderFromDate() {
         return orderFromDate;
     }
 
-    public void setOrderFromDate(Date orderFromDate) {
+    public void setOrderFromDate(String orderFromDate) {
         this.orderFromDate = orderFromDate;
     }
 
-    public Date getOrderToDate() {
+    public String getOrderToDate() {
         return orderToDate;
     }
 
-    public void setOrderToDate(Date orderToDate) {
+    public void setOrderToDate(String orderToDate) {
         this.orderToDate = orderToDate;
     }
 

@@ -29,7 +29,7 @@ public class ImportLogistics {
   int insuranceInventoryType;
   BigDecimal targetServiceLevel;
   String plcArticleCode;
-  Date plcDate;
+  String plcDate;
   BigDecimal plcPerc;
   String abcClass;
   BigDecimal buyingPrice;
@@ -224,11 +224,11 @@ public class ImportLogistics {
         this.plcArticleCode = plcArticleCode;
     }
 
-    public Date getPlcDate() {
+    public String getPlcDate() {
         return plcDate;
     }
 
-    public void setPlcDate(Date plcDate) {
+    public void setPlcDate(String plcDate) {
         this.plcDate = plcDate;
     }
 

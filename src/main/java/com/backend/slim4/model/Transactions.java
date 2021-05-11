@@ -14,8 +14,8 @@ public class Transactions {
     String warehouse;
     String code;
     String issueDate;
-    Date confirmedDate;
-    Date requestedDate;
+    String confirmedDate;
+    String requestedDate;
     BigDecimal issueQuantity;
     String lineNumber;
     BigDecimal confirmedQuantity;
@@ -101,19 +101,19 @@ public class Transactions {
         this.issueDate = issueDate;
     }
 
-    public Date getConfirmedDate() {
+    public String getConfirmedDate() {
         return confirmedDate;
     }
 
-    public void setConfirmedDate(Date confirmedDate) {
+    public void setConfirmedDate(String confirmedDate) {
         this.confirmedDate = confirmedDate;
     }
 
-    public Date getRequestedDate() {
+    public String getRequestedDate() {
         return requestedDate;
     }
 
-    public void setRequestedDate(Date requestedDate) {
+    public void setRequestedDate(String requestedDate) {
         this.requestedDate = requestedDate;
     }
 

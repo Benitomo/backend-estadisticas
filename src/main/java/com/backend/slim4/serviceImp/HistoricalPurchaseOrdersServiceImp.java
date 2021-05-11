@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -96,16 +98,15 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                     + "TRIM(suppliername) as suppliername "
                     + "from historicalpo";
             System.out.print("\n ------------------------------HISTORICALPO------------------------------ \n");
-            System.out.print("\n Entré a traer info de Informix \n ");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
                // Ejecutamos el query que trae la información de Informix    
                ResultSet rs = stmt.executeQuery(sql);
                // Contador que nos permite saber cuando llegamos al límite de inserción
                int counter = 0;
                int r = emptyTable(stmt2);
-               System.out.print("\n Resultado del Delete: " + r + "\n");
                if(r>=0){
-                   System.out.print("\n Entré al while next \n");
+                    System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                     while (rs.next()) {
                         pstmt.setInt(1, rs.getInt("controlid"));
                         pstmt.setString(2, rs.getString("warehousecode"));
@@ -113,7 +114,7 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                         pstmt.setString(4, rs.getString("ordernumber"));
                         pstmt.setInt(5, rs.getInt("line"));
                         pstmt.setInt(6, rs.getInt("ordertypenumber"));
-                        pstmt.setDate(7, rs.getDate("delivereddate"));
+                        pstmt.setString(7, getFormatoFecha(rs.getString("delivereddate")));
                         pstmt.setInt(8, rs.getInt("deliverdquantity"));
                         pstmt.setString(9, rs.getString("supplier"));
                         pstmt.setString(10, rs.getString("comments"));
@@ -121,12 +122,12 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                         pstmt.setString(12, rs.getString("freetext2"));
                         pstmt.setBigDecimal(13, rs.getBigDecimal("freenumber1"));
                         pstmt.setBigDecimal(14, rs.getBigDecimal("freenumber2"));
-                        pstmt.setDate(15, rs.getDate("ordereddate"));
-                        pstmt.setDate(16, rs.getDate("requesteddate"));
+                        pstmt.setString(15, getFormatoFecha(rs.getString("ordereddate")));
+                        pstmt.setString(16, getFormatoFecha(rs.getString("requesteddate")));
                         pstmt.setInt(17, rs.getInt("orderedquantity"));
                         pstmt.setInt(18, rs.getInt("requestedquantity"));
                         pstmt.setInt(19, rs.getInt("confirmedquantity"));
-                        pstmt.setDate(20, rs.getDate("confirmeddate"));
+                        pstmt.setString(20, getFormatoFecha(rs.getString("confirmeddate")));
                         pstmt.setString(21, rs.getString("suppliernumber"));
                         pstmt.setString(22, rs.getString("suppliername"));
                         
@@ -157,6 +158,8 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
+            } catch (ParseException ex) {
+                Logger.getLogger(HistoricalPurchaseOrdersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -168,6 +171,17 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
+    }
+    
+    public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
     }
     
     public ResponseEntity historicalPurchaseOrdersInsert(ArrayList<HistoricalPurchaseOrders> t) throws ClassNotFoundException {
@@ -197,9 +211,8 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
     }
     
     public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a eliminar los registros de Sql Server \n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_HistoricalPurchaseOrders]";
-        System.out.print("\n Entré a eliminar info de Sql Server previo a insertar");
         int result = 0;
         try {
             result = stmt.executeUpdate(sql);

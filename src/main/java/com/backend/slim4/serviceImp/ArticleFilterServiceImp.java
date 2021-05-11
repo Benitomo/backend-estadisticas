@@ -89,8 +89,6 @@ public class ArticleFilterServiceImp implements ArticleFilterService{
                 ImportControl control = new ImportControl();
                 control.setControlID(1);
                 control.setImportType(importType);
-                control.setControlTimestamp("");
-                control.setControlStatus(4);
                 control_service.insert(stmt2, importType, control);
                 System.out.print("\n Proceso finalizado! \n");
                 System.out.print("\n ------------------------------ARTICLEFILTER------------------------------ \n");

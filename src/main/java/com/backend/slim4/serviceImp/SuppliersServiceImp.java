@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -117,7 +119,7 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "TRIM(ud5) as ud5 "
                     + "from suppliers";
             System.out.print("\n ------------------------------SUPPLIERS------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
                // Ejecutamos el query que trae la información de Informix    
@@ -125,9 +127,8 @@ public class SuppliersServiceImp implements SuppliersService{
                // Contador que nos permite saber cuando llegamos al límite de inserción
                int counter = 0;
                int r = emptyTable(stmt2);
-               System.out.print("\n Resultado del Delete: " + r + "\n");
                if(r>=0){
-                   System.out.print("\n Entré al while next \n");
+                   System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                    while (rs.next()) {
                         pstmt.setInt(1, rs.getInt("controlid"));
                         pstmt.setString(2, rs.getString("warehousecode"));
@@ -149,8 +150,8 @@ public class SuppliersServiceImp implements SuppliersService{
                         pstmt.setInt(18, rs.getInt("availableinventory"));
                         pstmt.setBigDecimal(19, rs.getBigDecimal("desiredsplit"));
                         pstmt.setInt(20, rs.getInt("suppliedquantity"));
-                        pstmt.setDate(21, rs.getDate("orderfromdate"));
-                        pstmt.setDate(22, rs.getDate("ordertodate"));
+                        pstmt.setString(21, getFormatoFecha(rs.getString("orderfromdate")));
+                        pstmt.setString(22, getFormatoFecha(rs.getString("ordertodate")));
                         pstmt.setInt(23, rs.getInt("logisticUnit1"));
                         pstmt.setInt(24, rs.getInt("logisticUnit2"));
                         pstmt.setInt(25, rs.getInt("logisticUnit3"));
@@ -178,8 +179,6 @@ public class SuppliersServiceImp implements SuppliersService{
                         ImportControl control = new ImportControl();
                         control.setControlID(1);
                         control.setImportType(importType);
-                        control.setControlTimestamp("");
-                        control.setControlStatus(4);
                         control_service.insert(stmt2, importType, control);
                          System.out.print("\n Proceso finalizado! \n");
                          System.out.print("\n ------------------------------SUPPLIERS------------------------------ \n");
@@ -190,6 +189,8 @@ public class SuppliersServiceImp implements SuppliersService{
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
+            } catch (ParseException ex) {
+                Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -203,8 +204,19 @@ public class SuppliersServiceImp implements SuppliersService{
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
     
+    public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
+    }
+    
     public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a eliminar los registros de Sql Server \n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Suppliers]";
         int result = 0;
         try {

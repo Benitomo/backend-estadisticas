@@ -34,7 +34,7 @@ public class ImportControlServiceImp implements ImportControlService{
         :
                 "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[ImportControl]"
                 + "(controlId, importType, controlTimestamp, controlStatus) "
-                + "VALUES (" + control.getControlID() + ", " + control.getImportType()+ ", '" + timestamp.toString() + "', " + control.getControlStatus()+ ")";
+                + "VALUES (" + control.getControlID() + ", " + control.getImportType()+ ", '" + timestamp.toString() + "', " + 1 + ")";
         
         
         try {

@@ -11,7 +11,7 @@ public class HistoricalPurchaseOrders {
     String number;
     int line;
     int orderTypeNumber;
-    Date deliveredDate;
+    String deliveredDate;
     int deliveredQuantity;
     String supplier;
     String comment;
@@ -19,12 +19,12 @@ public class HistoricalPurchaseOrders {
     String freeText2; 
     BigDecimal freeNumber1;
     BigDecimal freeNumber2;
-    Date orderedDate;
-    Date requestedDate;
+    String orderedDate;
+    String requestedDate;
     int orderedQuantity;
     int requestedQuantity;
     int confirmedQuantity;
-    Date confirmedDate;
+    String confirmedDate;
     String supplierNumber;
     String supplierName;
 
@@ -76,11 +76,11 @@ public class HistoricalPurchaseOrders {
         this.orderTypeNumber = orderTypeNumber;
     }
 
-    public Date getDeliveredDate() {
+    public String getDeliveredDate() {
         return deliveredDate;
     }
 
-    public void setDeliveredDate(Date deliveredDate) {
+    public void setDeliveredDate(String deliveredDate) {
         this.deliveredDate = deliveredDate;
     }
 
@@ -140,19 +140,19 @@ public class HistoricalPurchaseOrders {
         this.freeNumber2 = freeNumber2;
     }
 
-    public Date getOrderedDate() {
+    public String getOrderedDate() {
         return orderedDate;
     }
 
-    public void setOrderedDate(Date orderedDate) {
+    public void setOrderedDate(String orderedDate) {
         this.orderedDate = orderedDate;
     }
 
-    public Date getRequestedDate() {
+    public String getRequestedDate() {
         return requestedDate;
     }
 
-    public void setRequestedDate(Date requestedDate) {
+    public void setRequestedDate(String requestedDate) {
         this.requestedDate = requestedDate;
     }
 
@@ -180,11 +180,11 @@ public class HistoricalPurchaseOrders {
         this.confirmedQuantity = confirmedQuantity;
     }
 
-    public Date getConfirmedDate() {
+    public String getConfirmedDate() {
         return confirmedDate;
     }
 
-    public void setConfirmedDate(Date confirmedDate) {
+    public void setConfirmedDate(String confirmedDate) {
         this.confirmedDate = confirmedDate;
     }
 

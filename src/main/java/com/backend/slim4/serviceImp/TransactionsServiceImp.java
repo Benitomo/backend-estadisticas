@@ -97,8 +97,8 @@ public class TransactionsServiceImp implements TransactionsService {
                 pstmt.setString(6, rs.getString("warehouse"));
                 pstmt.setString(7, rs.getString("articlecode"));
                 pstmt.setString(8, getFormatoFecha(rs.getString("issuedate")));
-                pstmt.setDate(9, rs.getDate("confirmeddate"));
-                pstmt.setDate(10, rs.getDate("requesteddate"));
+                pstmt.setString(9, getFormatoFecha(rs.getString("confirmeddate")));
+                pstmt.setString(10, getFormatoFecha(rs.getString("requesteddate")));
                 pstmt.setBigDecimal(11, rs.getBigDecimal("issuequantity"));
                 pstmt.setString(12, rs.getString("linenumber"));
                 pstmt.setBigDecimal(13, rs.getBigDecimal("confirmedquantity"));
@@ -173,7 +173,6 @@ public class TransactionsServiceImp implements TransactionsService {
     
     public int emptyTable(Statement stmt){
         System.out.print("\n-Eliminando registros de Sql Server" + "\n");
-        
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
         int result = 0;
         try {

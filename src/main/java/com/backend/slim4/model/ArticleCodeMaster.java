@@ -9,7 +9,7 @@ public class ArticleCodeMaster {
   int controlId;
   String warehousecode;
   String code;
-  Date creationDate;
+  String creationDate;
   String description;
   BigDecimal unitPrice;
   BigDecimal salesPrice;
@@ -163,11 +163,11 @@ public class ArticleCodeMaster {
         this.code = code;
     }
 
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 

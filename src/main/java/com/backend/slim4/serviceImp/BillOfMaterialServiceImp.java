@@ -97,7 +97,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         pstmt.setString(5, rs.getString("bomid"));
                         pstmt.setString(6, rs.getString("linenumber"));
                         pstmt.setBigDecimal(7, rs.getBigDecimal("leadtime"));
-                        pstmt.setDate(8, rs.getDate("fromdate"));
+                        pstmt.setString(8, getFormatoFecha(rs.getString("fromdate")));
                         pstmt.setString(9, getFormatoFecha(rs.getString("todate")));
                         pstmt.setString(10, rs.getString("bomtype"));
                         pstmt.setInt(11, rs.getInt("exceptionlevel"));

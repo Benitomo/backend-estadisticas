@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -80,7 +82,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "ud4 "
                     + "from stockdetails";
             System.out.print("\n ------------------------------STOCKDETAILS------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
                // Ejecutamos el query que trae la información de Informix    
@@ -89,7 +91,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
                int counter = 0;
                int r = emptyTable(stmt2);
                if(r>=0){
-                    System.out.print("\n Entré al while next \n");
+                    System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                 while (rs.next()) {
                         pstmt.setInt(1, rs.getInt("controlid"));
                         pstmt.setString(2, rs.getString("warehousecode"));
@@ -98,8 +100,8 @@ public class StockDetailsServiceImp implements StockDetailsService {
                         pstmt.setString(5, rs.getString("stockid"));
                         pstmt.setString(6, rs.getString("stocktype"));
                         pstmt.setInt(7, rs.getInt("excludesetting"));
-                        pstmt.setDate(8, rs.getDate("excludetilldate"));
-                        pstmt.setDate(9, rs.getDate("excludefromdate"));
+                        pstmt.setString(8, getFormatoFecha(rs.getString("excludetilldate")));
+                        pstmt.setString(9, getFormatoFecha(rs.getString("excludefromdate")));
                         pstmt.setBigDecimal(10, rs.getBigDecimal("initialshelflife"));
                         pstmt.setBigDecimal(11, rs.getBigDecimal("remainingshelflife"));
                         pstmt.setString(12, rs.getString("ud1"));
@@ -122,8 +124,6 @@ public class StockDetailsServiceImp implements StockDetailsService {
                         ImportControl control = new ImportControl();
                         control.setControlID(1);
                         control.setImportType(importType);
-                        control.setControlTimestamp("");
-                        control.setControlStatus(4);
                         control_service.insert(stmt2, importType, control);
                         System.out.print("\n Proceso finalizado! \n");
                         System.out.print("\n ------------------------------STOCKDETAILS------------------------------ \n");
@@ -134,6 +134,8 @@ public class StockDetailsServiceImp implements StockDetailsService {
                             mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                         }
                
+            } catch (ParseException ex) {
+                Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -144,6 +146,17 @@ public class StockDetailsServiceImp implements StockDetailsService {
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
+    }
+    
+    public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
     }
     
     public ResponseEntity stockDetailsInsert(ArrayList<StockDetails> t) throws ClassNotFoundException {
@@ -173,6 +186,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
     }
     
     public int emptyTable(Statement stmt){
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_StockDetails]";
         int result = 0;
         try {

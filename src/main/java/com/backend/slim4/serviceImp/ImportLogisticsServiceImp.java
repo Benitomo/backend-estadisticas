@@ -16,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -117,16 +119,15 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                     + "isq "
                     + "from logistics";
             System.out.print("\n ------------------------------LOGISTICS------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
             // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
             int counter = 0;
             int r = emptyTable(stmt2);
-            System.out.print("\n Resultado del Delete: " + r + "\n");
             if(r>=0){
+                System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                 while (rs.next()) {
-                
                 pstmt.setInt(1, rs.getInt("controlid"));
                 pstmt.setString(2, rs.getString("warehousecode"));
                 pstmt.setString(3, rs.getString("articlecode"));
@@ -150,7 +151,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                 pstmt.setInt(21, rs.getInt("insuranceinventorytype"));
                 pstmt.setBigDecimal(22, rs.getBigDecimal("targetservicelevel"));
                 pstmt.setString(23, rs.getString("plcarticlecode"));
-                pstmt.setDate(24, rs.getDate("plcdate"));
+                pstmt.setString(24, getFormatoFecha(rs.getString("plcdate")));
                 pstmt.setBigDecimal(25, rs.getBigDecimal("plcperc"));
                 pstmt.setString(26, rs.getString("abcclass"));
                 pstmt.setBigDecimal(27, rs.getBigDecimal("buyingprice"));
@@ -183,6 +184,8 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                     tituloResp = "Error";
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                 }
+            } catch (ParseException ex) {
+                Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
              
             cnt.close();
@@ -200,8 +203,19 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
     
+    public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
+    }
+    
     public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Logistics]";
         int result = 0;
         try {

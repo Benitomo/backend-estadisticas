@@ -13,8 +13,8 @@ public class StockDetails {
     String stockID;
     String stockType;
     int excludeSetting;
-    Date excludeTillDate;
-    Date excludeFromDate;
+    String excludeTillDate;
+    String excludeFromDate;
     BigDecimal initialShelfLife;
     BigDecimal remainingShelfLife;
     String uD1;
@@ -78,19 +78,19 @@ public class StockDetails {
         this.excludeSetting = excludeSetting;
     }
 
-    public Date getExcludeTillDate() {
+    public String getExcludeTillDate() {
         return excludeTillDate;
     }
 
-    public void setExcludeTillDate(Date excludeTillDate) {
+    public void setExcludeTillDate(String excludeTillDate) {
         this.excludeTillDate = excludeTillDate;
     }
 
-    public Date getExcludeFromDate() {
+    public String getExcludeFromDate() {
         return excludeFromDate;
     }
 
-    public void setExcludeFromDate(Date excludeFromDate) {
+    public void setExcludeFromDate(String excludeFromDate) {
         this.excludeFromDate = excludeFromDate;
     }
 
