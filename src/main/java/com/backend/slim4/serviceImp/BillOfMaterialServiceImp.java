@@ -7,12 +7,10 @@ import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.service.BillOfMaterialService;
 import com.backend.slim4.service.ImportControlService;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -152,7 +150,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
     public String getFormatoFecha(String fecha) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(sdf2.parse(fecha.toString()));
+        return sdf.format(sdf2.parse(fecha));
     }
     
     public ResponseEntity billOfMaterialInsert(ArrayList<BillOfMaterial> b) throws ClassNotFoundException {

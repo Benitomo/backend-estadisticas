@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -94,23 +96,22 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     + "TRIM(suppliername) as suppliername"
                     + " from purchaseorder";
             System.out.print("\n ------------------------------PURCHASEORDER------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
             // Ejecutamos el query que trae la información de Informix    
             ResultSet rs = stmt.executeQuery(sql);
             int counter = 0;
             int r = emptyTable(stmt2);
-            System.out.print("\n Resultado del Delete: " + r + "\n");
             
             if(r>=0){
-                System.out.print("\n Entré al while next \n");
+                 System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                 while (rs.next()) {
                     
                     pstmt.setInt(1, rs.getInt("controlid"));
                     pstmt.setString(2, rs.getString("warehousecode"));
                     pstmt.setString(3, rs.getString("articlecode"));
                     pstmt.setString(4, rs.getString("numbers"));
-                    pstmt.setDate(5, rs.getDate("deliverydate"));
+                    pstmt.setString(5, getFormatoFecha(rs.getString("deliverydate")));
                     pstmt.setInt(6, rs.getInt("openquantity"));
                     pstmt.setString(7, rs.getString("supplier"));
                     pstmt.setString(8, rs.getString("comments"));
@@ -123,7 +124,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     pstmt.setInt(15, rs.getInt("ordertypenumber"));
                     pstmt.setInt(16, rs.getInt("line"));
                     pstmt.setInt(17, rs.getInt("excludesetting"));
-                    pstmt.setDate(18, rs.getDate("excludedate"));
+                    pstmt.setString(18, getFormatoFecha(rs.getString("excludedate")));
                     pstmt.setInt(19, rs.getInt("excludefromam"));
                     pstmt.setString(20, rs.getString("suppliernumber"));
                     pstmt.setString(21, rs.getString("suppliername"));
@@ -143,17 +144,17 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     ImportControl control = new ImportControl();
                     control.setControlID(1);
                     control.setImportType(importType);
-                    control.setControlTimestamp("");
-                    control.setControlStatus(4);
                     control_service.insert(stmt2, importType, control);
                     System.out.print("\n Proceso finalizado! \n");
                     System.out.print("\n ------------------------------PURCHASEORDER------------------------------ \n");
                     tituloResp = "Éxito";
-                    mensajeResp = "se ejecutó la interface Logistics correctamente!";
+                    mensajeResp = "se ejecutó la interface PurchaseOrder correctamente!";
                     }else{
                         tituloResp = "Error";
                         mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                     }
+            } catch (ParseException ex) {
+                Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
             
@@ -167,8 +168,19 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
         return new ResponseEntity(map, HttpStatus.CONFLICT);
     }
     
+     public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
+    }
+    
     public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_PurchaseOrder]";
         int result = 0;
         try {

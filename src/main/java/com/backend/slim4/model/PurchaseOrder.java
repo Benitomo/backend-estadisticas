@@ -10,7 +10,7 @@ public class PurchaseOrder {
   String warehousecode;
   String code;
   String number;
-  Date deliveryDate;
+  String deliveryDate;
   int openQuantity;
   String supplier;
   String comment;
@@ -23,7 +23,7 @@ public class PurchaseOrder {
   int orderTypeNumber;
   int line;
   int excludeSetting;
-  Date excludeDate;
+  String excludeDate;
   int excludeFromAM;
   String supplierNumber;
   String supplierName;
@@ -60,11 +60,11 @@ public class PurchaseOrder {
         this.number = number;
     }
 
-    public Date getDeliveryDate() {
+    public String getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
+    public void setDeliveryDate(String deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
@@ -164,11 +164,11 @@ public class PurchaseOrder {
         this.excludeSetting = excludeSetting;
     }
 
-    public Date getExcludeDate() {
+    public String getExcludeDate() {
         return excludeDate;
     }
 
-    public void setExcludeDate(Date excludeDate) {
+    public void setExcludeDate(String excludeDate) {
         this.excludeDate = excludeDate;
     }
 
