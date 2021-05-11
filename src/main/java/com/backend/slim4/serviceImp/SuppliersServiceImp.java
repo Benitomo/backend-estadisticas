@@ -92,7 +92,7 @@ public class SuppliersServiceImp implements SuppliersService{
                     + "leadtime,"
                     + "reviewtime,"
                     + "buyingprice,"
-                    + "currencycode,"
+                    + "TRIM(currencycode) as currencycode,"
                     + "moq,"
                     + "ioq,"
                     + "eoq,"

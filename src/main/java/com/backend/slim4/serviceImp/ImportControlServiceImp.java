@@ -20,18 +20,44 @@ public class ImportControlServiceImp implements ImportControlService{
    
    @Override
    public int insert(Statement stmt, int interfaceID, ImportControl control){
-        System.out.print("\n Entré a insertar registro en ImportControl en Sql Server \n");
-        
+       int result = 0;
+       // Obtener fecha y hora actual
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         System.out.print("\n Timestamp: " + timestamp + " \n");
-        String sql = "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[ImportControl](controlId, importType, controlTimestamp, controlStatus) "
+        // Validar si existe un registro en ImportControl respecto a la interface, dependiendo de que exista el query cambia
+        boolean validacion = existeRegistro(stmt, interfaceID, control);
+        String sql = validacion == true?
+                "UPDATE [slim4interface_test].[dbo].[ImportControl] "
+                + "SET controlStatus = " + 1 
+                + ", controlTimestamp = '" + timestamp 
+                + "' WHERE importType = " + interfaceID
+        :
+                "SET NOCOUNT ON INSERT INTO [slim4interface_test].[dbo].[ImportControl]"
+                + "(controlId, importType, controlTimestamp, controlStatus) "
                 + "VALUES (" + control.getControlID() + ", " + control.getImportType()+ ", '" + timestamp.toString() + "', " + control.getControlStatus()+ ")";
-        int result = 0;
+        
+        
         try {
-            result = stmt.executeUpdate(sql);
+            if(validacion == true)
+                 stmt.execute(sql);
+            else
+                stmt.executeUpdate(sql);
+            
         } catch (SQLException ex) {
             Logger.getLogger(ImportControlServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }
+   
+   public boolean existeRegistro(Statement stmt, int interfaceID, ImportControl control){
+        String sql = "SET NOCOUNT ON SELECT COUNT (*) FROM [slim4interface_test].[dbo].[ImportControl] WHERE importType = " + control.getImportType();
+        boolean result = false;
+        try {
+            result = stmt.execute(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(ImportControlServiceImp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
+   
 }

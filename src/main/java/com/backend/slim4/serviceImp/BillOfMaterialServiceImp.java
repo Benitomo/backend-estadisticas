@@ -7,10 +7,14 @@ import com.backend.slim4.model.ImportControl;
 import com.backend.slim4.service.BillOfMaterialService;
 import com.backend.slim4.service.ImportControlService;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BillOfMaterialServiceImp implements BillOfMaterialService {
+    // Servicio de ImportControl para notificar cuando la interface ha sido importada con éxito
     @Autowired
     ImportControlService control_service;
     // Variable límite de registros
@@ -76,8 +81,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     + "componentwarehouse "
                     + "from billofmaterial";
             System.out.print("\n ------------------------------BILLOFMATERIAL------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
-            
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
+            boolean test = false;
             try (PreparedStatement pstmt = cnt2.prepareStatement(sqlPrepare)) {
                // Ejecutamos el query que trae la información de Informix    
                ResultSet rs = stmt.executeQuery(sql);
@@ -85,7 +90,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                int counter = 0;
                int r = emptyTable(stmt2);
                if(r>=0){
-                    System.out.print("\n Entré al while next \n");
+                    System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                     while (rs.next()) {
                         pstmt.setInt(1, rs.getInt("controlid"));
                         pstmt.setString(2, rs.getString("articlecode"));
@@ -95,7 +100,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         pstmt.setString(6, rs.getString("linenumber"));
                         pstmt.setBigDecimal(7, rs.getBigDecimal("leadtime"));
                         pstmt.setDate(8, rs.getDate("fromdate"));
-                        pstmt.setDate(9, rs.getDate("todate"));
+                        pstmt.setString(9, getFormatoFecha(rs.getString("todate")));
                         pstmt.setString(10, rs.getString("bomtype"));
                         pstmt.setInt(11, rs.getInt("exceptionlevel"));
                         pstmt.setString(12, rs.getString("warehouse"));
@@ -105,8 +110,10 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         counter++;
                          if (counter == REGISTROS_BATCH) {
                              pstmt.executeBatch();
+                             test = true;
                              counter = 0;
                          }
+                         
 
                          }
                          //revisamos si todavía hay sentencias pendientes de ejecutar
@@ -115,9 +122,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                          }
                             ImportControl control = new ImportControl();
                             control.setControlID(1);
+                            control.setControlStatus(1);
                             control.setImportType(importType);
-                            control.setControlTimestamp("");
-                            control.setControlStatus(4);
                             control_service.insert(stmt2, importType, control);
                          System.out.print("\n Proceso finalizado! \n");
                          System.out.print("\n ------------------------------BILLOFMATERIAL------------------------------ \n");
@@ -128,6 +134,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
+            } catch (ParseException ex) {
+                Logger.getLogger(BillOfMaterialServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -139,6 +147,12 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
         HashMap<String, String> map = new HashMap<>();
         map.put(tituloResp, mensajeResp);
         return new ResponseEntity(map, HttpStatus.CONFLICT);
+    }
+    
+    public String getFormatoFecha(String fecha) throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(sdf2.parse(fecha.toString()));
     }
     
     public ResponseEntity billOfMaterialInsert(ArrayList<BillOfMaterial> b) throws ClassNotFoundException {
@@ -168,7 +182,7 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
     }
     
     public int emptyTable(Statement stmt){
-        System.out.print("Entre a eliminar la info de Sql Server" + "\n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_BillOfMaterial]";
         int result = 0;
         try {

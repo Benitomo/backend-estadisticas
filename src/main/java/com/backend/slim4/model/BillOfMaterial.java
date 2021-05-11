@@ -13,7 +13,7 @@ public class BillOfMaterial {
     String lineNumber;
     BigDecimal leadTime;
     Date fromDate;
-    Date toDate;
+    String toDate;
     String bomType;
     int exceptionLevel;
     String warehouse;
@@ -84,11 +84,11 @@ public class BillOfMaterial {
         this.fromDate = fromDate;
     }
 
-    public Date getToDate() {
+    public String getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date toDate) {
+    public void setToDate(String toDate) {
         this.toDate = toDate;
     }
 

@@ -75,7 +75,7 @@ public class StockDetailsServiceImp implements StockDetailsService {
                     + "initialshelflife,"
                     + "remainingshelflife,"
                     + "TRIM(ud1) as ud1,"
-                    + "TRIM(ud2) as ud1,"
+                    + "TRIM(ud2) as ud2,"
                     + "TRIM(ud3) as ud3,"
                     + "ud4 "
                     + "from stockdetails";
