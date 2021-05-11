@@ -13,7 +13,7 @@ public class Transactions {
     String transactionStatus;
     String warehouse;
     String code;
-    Date issueDate;
+    String issueDate;
     Date confirmedDate;
     Date requestedDate;
     BigDecimal issueQuantity;
@@ -93,11 +93,11 @@ public class Transactions {
         this.code = code;
     }
 
-    public Date getIssueDate() {
+    public String getIssueDate() {
         return issueDate;
     }
 
-    public void setIssueDate(Date issueDate) {
+    public void setIssueDate(String issueDate) {
         this.issueDate = issueDate;
     }
 

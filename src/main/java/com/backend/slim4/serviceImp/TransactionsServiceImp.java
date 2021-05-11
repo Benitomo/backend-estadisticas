@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -46,7 +48,7 @@ public class TransactionsServiceImp implements TransactionsService {
             Statement stmt2 = cnt2.createStatement();
             // Query que trae la información de Informix
             System.out.print("\n ------------------------------TRANSACTIONS------------------------------ \n");
-            System.out.print("\n Entré a ejecutar query select en informix \n");
+            System.out.print("\n-Trayendo información de la base de datos Informix \n");
             String sql = "SELECT "
                     + "controlid,"
                     + "TRIM(transactionnumber) as transactionnumber,"
@@ -84,10 +86,8 @@ public class TransactionsServiceImp implements TransactionsService {
             ResultSet rs = stmt.executeQuery(sql);
             int counter = 0;
             int r = emptyTable(stmt2);
-            
-            System.out.print("\n Registros eliminados en Sql Server: " + r + "\n");
             if(r>=0){
-                System.out.print("\n Entré a insertar la info " + "\n");
+                System.out.print("\n-Realizando inserción de datos en bloque en Sql Server mediante lotes de 1000 registros \n");
                 while (rs.next()) {
                 pstmt.setInt(1, rs.getInt("controlid"));
                 pstmt.setString(2, rs.getString("transactionnumber"));
@@ -96,7 +96,7 @@ public class TransactionsServiceImp implements TransactionsService {
                 pstmt.setString(5, rs.getString("transactionstatus"));
                 pstmt.setString(6, rs.getString("warehouse"));
                 pstmt.setString(7, rs.getString("articlecode"));
-                pstmt.setDate(8, rs.getDate("issuedate"));
+                pstmt.setString(8, getFormatoFecha(rs.getString("issuedate")));
                 pstmt.setDate(9, rs.getDate("confirmeddate"));
                 pstmt.setDate(10, rs.getDate("requesteddate"));
                 pstmt.setBigDecimal(11, rs.getBigDecimal("issuequantity"));
@@ -145,6 +145,8 @@ public class TransactionsServiceImp implements TransactionsService {
                             tituloResp = "Error";
                             mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                         }
+            } catch (ParseException ex) {
+                Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {
@@ -158,8 +160,19 @@ public class TransactionsServiceImp implements TransactionsService {
         return new ResponseEntity(map, HttpStatus.CONFLICT);
         }
     
+    public String getFormatoFecha(String fecha) throws ParseException{
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
+    }
+    
     public int emptyTable(Statement stmt){
-        System.out.print("\n Entré a ejecutar query delete en Sql Server \n");
+        System.out.print("\n-Eliminando registros de Sql Server" + "\n");
         
         String sql = "delete from [slim4interface_test].[dbo].[S4Import_Transactions]";
         int result = 0;

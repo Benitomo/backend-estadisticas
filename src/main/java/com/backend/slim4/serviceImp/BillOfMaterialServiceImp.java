@@ -148,9 +148,14 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
     }
     
     public String getFormatoFecha(String fecha) throws ParseException{
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(sdf2.parse(fecha));
+        String convertion = null;
+        if(fecha != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            convertion = sdf.format(sdf2.parse(fecha));
+        } 
+        
+        return convertion;
     }
     
     public ResponseEntity billOfMaterialInsert(ArrayList<BillOfMaterial> b) throws ClassNotFoundException {
