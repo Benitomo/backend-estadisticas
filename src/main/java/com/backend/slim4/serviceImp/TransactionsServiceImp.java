@@ -57,9 +57,9 @@ public class TransactionsServiceImp implements TransactionsService {
                     + "transactionstatus,"
                     + "TRIM(warehouse) as warehouse,"
                     + "TRIM(articlecode) as articlecode,"
-                    + "issuedate,"
-                    + "confirmeddate,"
-                    + "requesteddate,"
+                    + "TRIM(issuedate) as issuedate,"
+                    + "TRIM(confirmeddate) as confirmeddate,"
+                    + "TRIM(requesteddate) as requesteddate,"
                     + "issuequantity,"
                     + "TRIM(linenumber) as linenumber,"
                     + "confirmedquantity,"
@@ -96,9 +96,9 @@ public class TransactionsServiceImp implements TransactionsService {
                 pstmt.setString(5, rs.getString("transactionstatus"));
                 pstmt.setString(6, rs.getString("warehouse"));
                 pstmt.setString(7, rs.getString("articlecode"));
-                pstmt.setString(8, getFormatoFecha(rs.getString("issuedate")));
-                pstmt.setString(9, getFormatoFecha(rs.getString("confirmeddate")));
-                pstmt.setString(10, getFormatoFecha(rs.getString("requesteddate")));
+                pstmt.setString(8, rs.getString("issuedate"));
+                pstmt.setString(9, rs.getString("confirmeddate"));
+                pstmt.setString(10, rs.getString("requesteddate"));
                 pstmt.setBigDecimal(11, rs.getBigDecimal("issuequantity"));
                 pstmt.setString(12, rs.getString("linenumber"));
                 pstmt.setBigDecimal(13, rs.getBigDecimal("confirmedquantity"));
@@ -145,9 +145,7 @@ public class TransactionsServiceImp implements TransactionsService {
                             tituloResp = "Error";
                             mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                         }
-            } catch (ParseException ex) {
-                Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
             cnt.close();
         } catch (SQLException ex) {
             Logger.getLogger(TransactionsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
@@ -163,6 +161,7 @@ public class TransactionsServiceImp implements TransactionsService {
     public String getFormatoFecha(String fecha) throws ParseException{
         String convertion = null;
         if(fecha != null){
+            System.out.print("\n Entre a parsear la fecha y esta es laque recibo: " + fecha + "\n");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
             convertion = sdf.format(sdf2.parse(fecha));
