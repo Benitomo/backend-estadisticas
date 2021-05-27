@@ -59,8 +59,8 @@ sudo su
 
 cd /btw/
 rm -f /btw/api-old/api-old.jar
-mv /btw/api-new.jar /btw/api-old/api-old.jar
-mv /btw/api-new/api-new.jar /btw/api-new.jar
+mv /btw/api.jar /btw/api-old/api-old.jar
+mv /btw/api-new/api-new.jar /btw/api.jar
 
 nohup java -jar /btw/api-new.jar &
 
