@@ -151,7 +151,7 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                 pstmt.setInt(21, rs.getInt("insuranceinventorytype"));
                 pstmt.setBigDecimal(22, rs.getBigDecimal("targetservicelevel"));
                 pstmt.setString(23, rs.getString("plcarticlecode"));
-                pstmt.setString(24, getFormatoFecha(rs.getString("plcdate")));
+                pstmt.setString(24, rs.getString("plcdate"));
                 pstmt.setBigDecimal(25, rs.getBigDecimal("plcperc"));
                 pstmt.setString(26, rs.getString("abcclass"));
                 pstmt.setBigDecimal(27, rs.getBigDecimal("buyingprice"));
@@ -184,14 +184,9 @@ public class ImportLogisticsServiceImp implements ImportLogisticsService {
                     tituloResp = "Error";
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                 }
-            } catch (ParseException ex) {
-                Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
              
             cnt.close();
-            
-            
-            
         } catch (SQLException ex) {
             Logger.getLogger(ImportLogisticsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {

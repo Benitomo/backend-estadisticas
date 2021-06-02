@@ -332,7 +332,7 @@ public class ArticleCodeMasterServiceImp implements ArticleCodeMasterService{
                         pstmt.setInt(1, rs.getInt("controlid"));
                         pstmt.setString(2, rs.getString("warehousecode"));
                         pstmt.setString(3, rs.getString("articlecode"));
-                        pstmt.setString(4, getFormatoFecha(rs.getString("creationdate")));
+                        pstmt.setString(4, rs.getString("creationdate"));
                         pstmt.setString(5, rs.getString("description"));
                         pstmt.setBigDecimal(6, rs.getBigDecimal("unitprice"));
                         pstmt.setBigDecimal(7, rs.getBigDecimal("salesprice"));
@@ -488,8 +488,6 @@ public class ArticleCodeMasterServiceImp implements ArticleCodeMasterService{
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
-            } catch (ParseException ex) {
-                Logger.getLogger(ArticleCodeMasterServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {

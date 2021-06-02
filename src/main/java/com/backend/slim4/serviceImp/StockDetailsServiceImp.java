@@ -100,8 +100,8 @@ public class StockDetailsServiceImp implements StockDetailsService {
                         pstmt.setString(5, rs.getString("stockid"));
                         pstmt.setString(6, rs.getString("stocktype"));
                         pstmt.setInt(7, rs.getInt("excludesetting"));
-                        pstmt.setString(8, getFormatoFecha(rs.getString("excludetilldate")));
-                        pstmt.setString(9, getFormatoFecha(rs.getString("excludefromdate")));
+                        pstmt.setString(8, rs.getString("excludetilldate"));
+                        pstmt.setString(9, rs.getString("excludefromdate"));
                         pstmt.setBigDecimal(10, rs.getBigDecimal("initialshelflife"));
                         pstmt.setBigDecimal(11, rs.getBigDecimal("remainingshelflife"));
                         pstmt.setString(12, rs.getString("ud1"));
@@ -134,8 +134,6 @@ public class StockDetailsServiceImp implements StockDetailsService {
                             mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                         }
                
-            } catch (ParseException ex) {
-                Logger.getLogger(StockDetailsServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {

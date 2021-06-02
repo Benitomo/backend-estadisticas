@@ -97,8 +97,8 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                         pstmt.setString(5, rs.getString("bomid"));
                         pstmt.setString(6, rs.getString("linenumber"));
                         pstmt.setBigDecimal(7, rs.getBigDecimal("leadtime"));
-                        pstmt.setString(8, getFormatoFecha(rs.getString("fromdate")));
-                        pstmt.setString(9, getFormatoFecha(rs.getString("todate")));
+                        pstmt.setString(8, rs.getString("fromdate"));
+                        pstmt.setString(9, rs.getString("todate"));
                         pstmt.setString(10, rs.getString("bomtype"));
                         pstmt.setInt(11, rs.getInt("exceptionlevel"));
                         pstmt.setString(12, rs.getString("warehouse"));
@@ -132,8 +132,6 @@ public class BillOfMaterialServiceImp implements BillOfMaterialService {
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
-            } catch (ParseException ex) {
-                Logger.getLogger(BillOfMaterialServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {

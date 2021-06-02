@@ -114,7 +114,7 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                         pstmt.setString(4, rs.getString("ordernumber"));
                         pstmt.setInt(5, rs.getInt("line"));
                         pstmt.setInt(6, rs.getInt("ordertypenumber"));
-                        pstmt.setString(7, getFormatoFecha(rs.getString("delivereddate")));
+                        pstmt.setString(7, rs.getString("delivereddate"));
                         pstmt.setInt(8, rs.getInt("deliverdquantity"));
                         pstmt.setString(9, rs.getString("supplier"));
                         pstmt.setString(10, rs.getString("comments"));
@@ -122,12 +122,12 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                         pstmt.setString(12, rs.getString("freetext2"));
                         pstmt.setBigDecimal(13, rs.getBigDecimal("freenumber1"));
                         pstmt.setBigDecimal(14, rs.getBigDecimal("freenumber2"));
-                        pstmt.setString(15, getFormatoFecha(rs.getString("ordereddate")));
-                        pstmt.setString(16, getFormatoFecha(rs.getString("requesteddate")));
+                        pstmt.setString(15, rs.getString("ordereddate"));
+                        pstmt.setString(16, rs.getString("requesteddate"));
                         pstmt.setInt(17, rs.getInt("orderedquantity"));
                         pstmt.setInt(18, rs.getInt("requestedquantity"));
                         pstmt.setInt(19, rs.getInt("confirmedquantity"));
-                        pstmt.setString(20, getFormatoFecha(rs.getString("confirmeddate")));
+                        pstmt.setString(20, rs.getString("confirmeddate"));
                         pstmt.setString(21, rs.getString("suppliernumber"));
                         pstmt.setString(22, rs.getString("suppliername"));
                         
@@ -158,8 +158,6 @@ public class HistoricalPurchaseOrdersServiceImp implements HistoricalPurchaseOrd
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
-            } catch (ParseException ex) {
-                Logger.getLogger(HistoricalPurchaseOrdersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {

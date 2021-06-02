@@ -150,8 +150,8 @@ public class SuppliersServiceImp implements SuppliersService{
                         pstmt.setInt(18, rs.getInt("availableinventory"));
                         pstmt.setBigDecimal(19, rs.getBigDecimal("desiredsplit"));
                         pstmt.setInt(20, rs.getInt("suppliedquantity"));
-                        pstmt.setString(21, getFormatoFecha(rs.getString("orderfromdate")));
-                        pstmt.setString(22, getFormatoFecha(rs.getString("ordertodate")));
+                        pstmt.setString(21, rs.getString("orderfromdate"));
+                        pstmt.setString(22, rs.getString("ordertodate"));
                         pstmt.setInt(23, rs.getInt("logisticUnit1"));
                         pstmt.setInt(24, rs.getInt("logisticUnit2"));
                         pstmt.setInt(25, rs.getInt("logisticUnit3"));
@@ -189,8 +189,6 @@ public class SuppliersServiceImp implements SuppliersService{
                     mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                    }
                
-            } catch (ParseException ex) {
-                Logger.getLogger(SuppliersServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
         } catch (SQLException ex) {

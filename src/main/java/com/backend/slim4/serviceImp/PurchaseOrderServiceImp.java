@@ -111,7 +111,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     pstmt.setString(2, rs.getString("warehousecode"));
                     pstmt.setString(3, rs.getString("articlecode"));
                     pstmt.setString(4, rs.getString("numbers"));
-                    pstmt.setString(5, getFormatoFecha(rs.getString("deliverydate")));
+                    pstmt.setString(5, rs.getString("deliverydate"));
                     pstmt.setInt(6, rs.getInt("openquantity"));
                     pstmt.setString(7, rs.getString("supplier"));
                     pstmt.setString(8, rs.getString("comments"));
@@ -124,7 +124,7 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                     pstmt.setInt(15, rs.getInt("ordertypenumber"));
                     pstmt.setInt(16, rs.getInt("line"));
                     pstmt.setInt(17, rs.getInt("excludesetting"));
-                    pstmt.setString(18, getFormatoFecha(rs.getString("excludedate")));
+                    pstmt.setString(18, rs.getString("excludedate"));
                     pstmt.setInt(19, rs.getInt("excludefromam"));
                     pstmt.setString(20, rs.getString("suppliernumber"));
                     pstmt.setString(21, rs.getString("suppliername"));
@@ -153,8 +153,6 @@ public class PurchaseOrderServiceImp implements PurchaseOrderService{
                         tituloResp = "Error";
                         mensajeResp = "Hubo problemas al eliminar la información de Sql Server previo a la inserción";
                     }
-            } catch (ParseException ex) {
-                Logger.getLogger(PurchaseOrderServiceImp.class.getName()).log(Level.SEVERE, null, ex);
             }
             cnt.close();
             
