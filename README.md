@@ -38,12 +38,12 @@ mvn clean package -Pjar
 
 Luego, conectados a la vpn de Impocali, hay que enviar el empaquetado mediante scp al servidor de producción:
 ```
-scp target/api-slim4.jar 10.142.0.58:/btw/api-new/api-new.jar
+scp target/api-slim4.jar 10.142.0.59:/btw/api-new/api-new.jar
 ```
 
 Luego, hay que conectarse al server de producción por ssh:
 ```
-ssh 10.142.0.58
+ssh 10.142.0.59
 ```
 
 Monitoreamos si esta un tomcat corriendo:
