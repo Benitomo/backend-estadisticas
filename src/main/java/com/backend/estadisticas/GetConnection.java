@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.backend.slim4;
+package com.backend.estadisticas;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -27,8 +27,8 @@ public class GetConnection {
         try {
 
             Class.forName("com.informix.jdbc.IfxDriver");
-            Connection cnt = (Connection) DriverManager.getConnection("jdbc:informix-sqli://10.142.0.2:1527/" + bd + ":" +
-                    "INFORMIXSERVER=btomo_tcp;user=informix;password=todayic");
+            Connection cnt = (Connection) DriverManager.getConnection("jdbc:informix-sqli://10.142.0.2:1526/" + bd + ":" +
+                    "INFORMIXSERVER=bdlinux_tcp;user=informix;password=todayic");
 
             //cnt.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 

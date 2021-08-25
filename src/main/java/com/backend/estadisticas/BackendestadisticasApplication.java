@@ -1,4 +1,4 @@
-package com.backend.slim4;
+package com.backend.estadisticas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,14 +6,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class BackendSlim4Application extends SpringBootServletInitializer{
+public class BackendestadisticasApplication extends SpringBootServletInitializer{
         
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(BackendSlim4Application.class);
+        return application.sources(BackendestadisticasApplication.class);
     }
 	public static void main(String[] args) {
-		SpringApplication.run(BackendSlim4Application.class, args);
+		SpringApplication.run(BackendestadisticasApplication.class, args);
 	}
 
 }
